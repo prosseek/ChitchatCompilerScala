@@ -1,16 +1,12 @@
 package compiler
 
-import org.antlr.v4.runtime.tree.ParseTree
+import org.antlr.v4.runtime.tree.{ParseTree, ParseTreeWalker}
 import org.antlr.v4.runtime.{ANTLRInputStream, CommonTokenStream}
-import parser.{ChitchatLexer, ChitchatParser}
-
-import java.io.File;
-import java.io.FileInputStream;
+import parser.{ChitchatBaseListener, ChitchatLexer, ChitchatParser}
+import java.io.File
+import java.io.FileInputStream
 import java.io.IOException;
 
-/**
-  * Created by smcho on 4/16/16.
-  */
 object Simple extends App {
 
   var filePath = "./resources/example/input.txt"
@@ -22,5 +18,14 @@ object Simple extends App {
   val tokens: CommonTokenStream = new CommonTokenStream(lexer)
   val parser: ChitchatParser = new ChitchatParser(tokens)
   val tree: ParseTree = parser.prog
+
+  val walker: ParseTreeWalker = new ParseTreeWalker
+  val loader: ChitchatLoader = new ChitchatLoader
+  walker.walk(loader, tree)
+
+  val types = loader.report
+  println(types.mkString("{",";","}"))
+  //val v = new MyVisitor
+  //v.visit(tree)
   System.out.println(tree.toStringTree(parser))
 }

@@ -17,22 +17,20 @@
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.11/resource_managed/main" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.11/resource_managed/test" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/../../src/main/antlr" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../gen" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../gen/parser" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../../out" />
       <excludeFolder url="file://$MODULE_DIR$/../../target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.11.8:jar" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.2:jar" level="project" />
-    <orderEntry type="library" name="SBT: chitchattype:chitchattype_2.11:0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: chitchatsummary:chitchatsummary_2.11:0.1:jar" level="project" />
-    <orderEntry type="library" name="SBT: bloomierfilter:bloomierfilter_2.11:0.1:jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang:scala-reflect:2.11.7:jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang.modules:scala-xml_2.11:1.0.2:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.11:2.2.6:jar" level="project" />
-    <orderEntry type="library" name="antlr-4.5.3-complete" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang.modules:scala-xml_2.11:1.0.2:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang:scala-reflect:2.11.7:jar" level="project" />
+    <orderEntry type="library" name="SBT: bloomierfilter:bloomierfilter_2.11:0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: chitchatsummary:chitchatsummary_2.11:0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: chitchattype:chitchattype_2.11:0.1:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.2:jar" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -40,6 +38,17 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/antlr4-4.5.4-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../lib/antlr4-runtime-4.5.4-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>
