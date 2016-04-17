@@ -3,6 +3,7 @@
 .history/
 .lib/
 
+gen/*
 target/*
 project/*
 out/*
