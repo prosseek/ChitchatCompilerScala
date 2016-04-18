@@ -7,4 +7,6 @@ object Annotation extends Enumeration {
 
 class TypeNode(override val name:String) extends Node(name = name) {
   var annotation = Annotation.PUBLIC
+  var parent:String = _
+  var assignMap:Map[String, Any] = _
 }
