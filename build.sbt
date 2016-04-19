@@ -16,7 +16,8 @@ target in Compile in doc := baseDirectory.value / "doc/api"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.2",
+  "org.antlr" % "antlr4" % "4.5.3",
+  "org.antlr" % "antlr4-runtime" % "4.5.3",
   "chitchattype" %% "chitchattype" % "0.1",
   "bloomierfilter" %% "bloomierfilter" % "0.1",
   "chitchatsummary" %% "chitchatsummary" % "0.1"

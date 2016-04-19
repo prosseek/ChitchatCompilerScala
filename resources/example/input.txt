@@ -1,1 +1,4 @@
-+  type hello extends range(min=0, max=10, size=5, signed=0)
++  type hello extends range(min=-10, max=10, size=5, signed=1)
+-  type hour extends range(size=5, min=0, max=23, signed=false)
+-  type minute extends range(size=6, min=0, max=59, signed=false)
++  type time extends encoding(hour, minute)

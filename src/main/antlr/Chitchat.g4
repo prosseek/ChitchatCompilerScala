@@ -3,23 +3,29 @@ grammar Chitchat;
 prog: (typedef)+
     ;
 
-typedef: annotation TYPE id EXT  base_type NEWLINE
-       ;
+typedef: annotation TYPE id EXT  base_type ;
+base_type: id '(' expressions ')';
 
-base_type: id '(' assigns ')';
-assigns: (assign ','?)+;
-assign: ID '=' INT ;
+expressions: (expression ','?)+;
+expression: comparison | assignment | function_call | primary_expresion;
+comparison: ID comparison_operator primary_expresion;
+assignment: ID '=' primary_expresion ;
+function_call: ID '(' (primary_expresion ','?)* ')';
 annotation: ('+'|'-');
+comparison_operator: '<'|'>'|'<='|'>=';
+
 id: ID | STRING;
+primary_expresion: ID | STRING | constant;
+constant: INT | FLOAT ;
 
 EXT: 'extends';
 TYPE: 'type';
 GROUP: 'group';
 RULE: 'rule';
 
-INT: [0-9]+;
+INT: ('+'|'-')?[0-9]+;
+FLOAT: ('+'|'-')?[0-9]+'.'[0-9]+;
 ID : [a-z][a-zA-Z0-9]* ;
 STRING : '"' .*? '"' ;
-NEWLINE : [\r\n]+ ;
 
-WS: [ \t]+ -> skip;
+WS: [ \t\r\n]+ -> skip;
