@@ -2,13 +2,10 @@ package node
 
 import scala.collection.mutable.ListBuffer
 
-object Annotation extends Enumeration {
-  type Annotation = Value
-  val PRIVATE, PUBLIC = Value
-}
-
-class TypeNode(override val name:String) extends Node(name = name) {
-  var annotation = Annotation.PUBLIC
-  var base_type:String = _
+case class TypeNode(override val name:String, val annotation: String, val base_name:String) extends Node(name = name) {
   val expressions = ListBuffer[ExpressionNode]()
+
+  def add(expressionNode: ExpressionNode): Unit = {
+    expressions += expressionNode
+  }
 }

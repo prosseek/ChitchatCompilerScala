@@ -25,7 +25,8 @@ RULE: 'rule';
 
 INT: ('+'|'-')?[0-9]+;
 FLOAT: ('+'|'-')?[0-9]+'.'[0-9]+;
-ID : [a-z][a-zA-Z0-9]* ;
+ID : [a-zA-Z][a-zA-Z0-9]* ;
 STRING : '"' .*? '"' ;
 
+COMMENT: '//' ~( '\r' | '\n' )*  -> skip ;
 WS: [ \t\r\n]+ -> skip;
