@@ -16,13 +16,16 @@ comparison_operator: '<'|'>'|'<='|'>=';
 
 id: ID | STRING;
 primary_expresion: ID | STRING | constant;
-constant: INT | FLOAT ;
+constant: INT | FLOAT | TRUE | FALSE;
 
 EXT: 'extends';
 TYPE: 'type';
 GROUP: 'group';
 RULE: 'rule';
 
+
+TRUE: 'true';
+FALSE: 'false'; 
 INT: ('+'|'-')?[0-9]+;
 FLOAT: ('+'|'-')?[0-9]+'.'[0-9]+;
 ID : [a-zA-Z][a-zA-Z0-9]* ;

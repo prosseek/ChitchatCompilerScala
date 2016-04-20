@@ -22,7 +22,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
   override def visitTypedef(ctx: ChitchatParser.TypedefContext) : Node = {
     val basetype = ctx.base_type()
     val annotation = ctx.annotation().getText()
-    val typenode = TypeNode(name = ctx.id().getText(),
+    val typenode = TypeNode(name = ctx.id().getText().replace("\"", ""),
       annotation = annotation,
       base_name = basetype.id().getText())
     val it = basetype.expressions().children.iterator()
@@ -73,13 +73,13 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
 
   /**
     * Returns a PrimaryExpressionNode with
-    *   valueType = ID|STRING|FLOAT|INT
+    *   valueType = ID|STRING|FLOAT|INT|BOOLEAN
     *   value = Any
     *
     * @param ctx the parse tree
     *     */
   override def visitPrimary_expresion(ctx: ChitchatParser.Primary_expresionContext) = {
-    var value:Any = 0
+    var value:String = ""
     var valueType:String = ""
 
     if (ctx.ID() != null) {
@@ -92,17 +92,25 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
     }
     else if (ctx.constant() != null) {
       if (ctx.constant().FLOAT() != null) {
-        value = ctx.constant().FLOAT().getText().toFloat
+        value = ctx.constant().FLOAT().getText()
         valueType = "FLOAT"
       }
-      else {
-        value = ctx.constant().INT().getText().toInt
+      else if (ctx.constant().INT() != null) {
+        value = ctx.constant().INT().getText()
         valueType = "INT"
+      }
+      else if (ctx.constant().TRUE() != null) {
+        value = ctx.constant().TRUE().getText()
+        valueType = "BOOLEAN"
+      }
+      else if (ctx.constant().FALSE() != null) {
+        value = ctx.constant().FALSE().getText()
+        valueType = "BOOLEAN"
       }
     }
     else {
       throw new RuntimeException(s"Error in Primary_expresionContext ${ctx.getText()}")
     }
-    PrimaryExpressionNode(valueType = valueType, value)
+    PrimaryExpressionNode(valueType = valueType, value = value)
   }
 }

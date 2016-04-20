@@ -5,10 +5,10 @@ import org.scalatest.FunSuite
 
 class TestTypeGen extends FunSuite
 {
-  test ("find range test") {
-    val prognode = NodeGenerator.get("./resources/example/input.txt")
-    val types = prognode.types.toList
+  val prognode = NodeGenerator.get("./resources/example/input.txt")
+  val types = prognode.types.toList
 
+  test ("find range test") {
     /*
         -type hour extends Range(size=5, min=0, max=23, signed=false)
         -type markethour extends hour(min=10, max=18)
@@ -18,11 +18,22 @@ class TestTypeGen extends FunSuite
         * => Range(name = "hour", min=10, max=18, size=5, signed=false)
      */
     val tg = new TypeGen(typeNode=null, typeNodes = types)
-    val result = tg.findRange("markethour")
-    val expected = Map[String, String]("name" -> "markethour", "group" -> "Range",
-                                       "min" -> "10", "max" -> "18", "size" -> "5", "signed" -> "false")
-    assert(result.toList.sorted == expected.toList.sorted)
+    val result = tg.getAssignMapFromRangeName("markethour", types)
+    val map1 = Map[String, String]("name" -> "markethour", "group" -> "Range",
+      "min" -> "10", "max" -> "18", "size" -> "5", "signed" -> "false")
+    assert(result.toList.sorted == map1.toList.sorted)
 
-    assert(tg.rangeMapToString(expected) == "new Range(name = \"markethour\", size = \"5\", min = \"10\", max = \"18\", signed=\"false\")")
+    val expected = "new Range(name = \"markethour\", size = \"5\", min = \"10\", max = \"18\", signed=\"false\")"
+    assert(tg.rangeMapToString(map1) == expected)
+  }
+
+  test ("gen test") {
+    val tg = new TypeGen(typeNode=null, typeNodes = types)
+
+    var expect =
+      "package chitchat.types\nclass Markethour extends Range ( name = \"markethour\", size = 5, min = 10, max = 18, signed = false )"
+    assert(expect == tg.gen("markethour"))
+
+    println(tg.gen("market time"))
   }
 }

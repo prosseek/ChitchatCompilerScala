@@ -1,6 +1,6 @@
-//+type hello extends Range(min=-10, max=10, size=5, signed=1)
--type hour extends Range(size=5, min=0, max=23, signed=0)
--type minute extends Range(size=6, min=0, max=59, signed=0)
+//+type hello extends Range(min=-10, max=10, size=5, signed=true)
+-type hour extends Range(size=5, min=0, max=23, signed=false)
+-type minute extends Range(size=6, min=0, max=59, signed=false)
 +type time extends Encoding(hour, minute)
 
 //+type temperature extends Float(min=-50.0, max=90.0)
