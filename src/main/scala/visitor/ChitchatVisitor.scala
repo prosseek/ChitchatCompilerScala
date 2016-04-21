@@ -3,6 +3,8 @@ package visitor
 import parser.{ChitchatBaseVisitor, ChitchatParser}
 import node._
 
+import scala.collection.mutable.ListBuffer
+
 class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
   var prognode: ProgNode = _
 
@@ -60,7 +62,21 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
       expression = AssignNode(ID = ID, node = node.asInstanceOf[PrimaryExpressionNode])
     }
     else if (ctx.function_call() != null) {
-      throw new RuntimeException("function call is not implemented")
+      val function_call = ctx.function_call()
+      val ID = function_call.ID().getText()
+      val pe = function_call.params()
+
+      val params = ListBuffer[Any]()
+
+      if (pe.children != null) {
+        val it = pe.children.iterator()
+
+        while (it.hasNext) {
+          params += it.next().getText()
+        }
+      }
+
+      expression = FunctionCallNode(ID = ID, params = params.toSeq)
     }
     else if (ctx.primary_expresion() != null) {
       expression = visit(ctx.primary_expresion()).asInstanceOf[PrimaryExpressionNode]
@@ -91,7 +107,11 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
       valueType = "STRING"
     }
     else if (ctx.constant() != null) {
-      if (ctx.constant().FLOAT() != null) {
+      if (ctx.constant().CHAR() != null) {
+        value = ctx.constant().CHAR().getText()
+        valueType = "CHAR"
+      }
+      else if (ctx.constant().FLOAT() != null) {
         value = ctx.constant().FLOAT().getText()
         valueType = "FLOAT"
       }
@@ -107,6 +127,8 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node] {
         value = ctx.constant().FALSE().getText()
         valueType = "BOOLEAN"
       }
+      else
+        throw new RuntimeException(s"wrong primary expression ${ctx.toString}")
     }
     else {
       throw new RuntimeException(s"Error in Primary_expresionContext ${ctx.getText()}")

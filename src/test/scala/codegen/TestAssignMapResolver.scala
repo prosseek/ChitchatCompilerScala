@@ -34,6 +34,13 @@ class TestAssignMapResolver extends FunSuite with AssignMapResolver {
     assert(getAssignMapFromRangeName("markethour", types).toList.sorted == expected.toList.sorted)
   }
 
+  test("getAssignMapFromFloatName test") {
+    // (goalRangeName:String, typeNodes:List[TypeNode]) = {)
+    var expected = Map("name" -> "temperature",
+      "min" -> "-50.0", "max" -> "90.0", "group" -> "Float")
+    assert(getAssignMapFromFloatName("temperature", types).toList.sorted == expected.toList.sorted)
+  }
+
   test("get history test") {
     assert(getHistory("market time", types).toString == "List(TypeNode(market time,+,time), TypeNode(time,+,Encoding))")
   }

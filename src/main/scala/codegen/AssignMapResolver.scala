@@ -1,6 +1,6 @@
 package codegen
 
-import node.{AssignNode, PrimaryExpressionNode, TypeNode}
+import node.{AssignNode, FunctionCallNode, PrimaryExpressionNode, TypeNode}
 
 import collection.mutable.{ListBuffer, Map => MMap}
 
@@ -40,6 +40,18 @@ trait AssignMapResolver {
     map
   }
 
+  /** returns type node (object) from name
+    *
+    * @param name
+    * @param typeNodes
+    * @return
+    */
+  def getTypeNode(name:String, typeNodes:List[TypeNode]) = {
+    val typeNode = typeNodes find (_.name == name)
+    if (typeNode.isEmpty) throw new RuntimeException(s"No ${name} in types")
+    typeNode.get
+  }
+
   /**
     * Given a range time, returns all the hierarchical history up to the type group.
     *
@@ -55,23 +67,17 @@ trait AssignMapResolver {
     * @return
     */
   def getHistory(goalRangeName:String, typeNodes:List[TypeNode]) = {
-    def getTypeNode(goalRangeName:String) = {
-      val typeNode = typeNodes find (_.name == goalRangeName)
-      if (typeNode.isEmpty) throw new RuntimeException(s"No ${goalRangeName} in types")
-      typeNode.get
-    }
-
     val typeHierarchy = ListBuffer[TypeNode]()
 
     // 1. check if the goalRangeName is in the type database
     //    set current node into the hierarchy
-    val typeNode = getTypeNode(goalRangeName)
+    val typeNode = getTypeNode(goalRangeName, typeNodes)
     typeHierarchy += typeNode
 
     // 2. get the parentNames and store them into database
     var parentName = typeNode.base_name
     while (!isParentInGroups(parentName)) {
-      val typeNode = getTypeNode(parentName)
+      val typeNode = getTypeNode(parentName, typeNodes)
       typeHierarchy += typeNode
       parentName = typeNode.base_name
     }
@@ -111,6 +117,69 @@ trait AssignMapResolver {
     map ++= Map("name" -> rangeName, "group" -> "Range")
     val history = getHistory(rangeName, typeNodes)
     map ++= getAssignMapFromHistory(history)
+    map.toMap
+  }
+
+  def getAssignMapFromFloatName(floatName:String, typeNodes:List[TypeNode]) = {
+    val map = MMap[String, String]()
+    map ++= Map("name" -> floatName, "group" -> "Float")
+    val history = getHistory(floatName, typeNodes)
+    map ++= getAssignMapFromHistory(history)
+    map.toMap
+  }
+
+  /**
+    * We support only two cases
+    * 1. function call
+    * 2. assignment
+    * 3. range
+    *
+    * ==== Example ====
+    * {{{
+    * +type event extends String(alphanum())
+    * +type name extends String(length < 10)
+    * }}}
+    *
+    * @param stringName
+    * @param typeNodes
+    * @return
+    */
+  def getMapFromStringName(stringName:String, typeNodes:List[TypeNode]) = {
+    val map = MMap[String, String]()
+    map ++= Map("name" -> stringName, "group" -> "String")
+    // map ++= getAssignMapFromHistory(history)
+
+    val typeNode = getTypeNode(stringName, typeNodes)
+    typeNode.expressions foreach {
+      expression => {
+        expression match {
+          case expression:FunctionCallNode => {
+            val function_name = expression.ID
+            val parameters = expression.params
+
+            // alphanum is min/max operation
+            if (function_name == "alphanum") {
+              map("type") = "assign"
+              map("max") = "122" // 'Z'
+              map("min") = "0" // 'a'
+            }
+            else {
+              map("type") = "function_call"
+              map("function_name") = function_name
+              map("value") = parameters(0).asInstanceOf[String]
+            }
+          }
+          case expression:AssignNode => {
+            map("type") = "assign"
+            val key = expression.ID
+            val node = expression.node
+            map(key) = node.value
+          }
+        }
+      }
+    }
+    // 1. get the string type
+
     map.toMap
   }
 
