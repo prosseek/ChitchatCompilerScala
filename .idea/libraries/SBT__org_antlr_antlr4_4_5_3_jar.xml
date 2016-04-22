@@ -6,7 +6,6 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/.ivy2/cache/org.antlr/antlr4/srcs/antlr4-4.5.3-sources.jar!/" />
-      <root url="jar://$USER_HOME$/.ivy2/cache/org.antlr/antlr4-runtime/srcs/antlr4-runtime-4.5.3-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

@@ -87,6 +87,7 @@ trait AssignMapResolver {
   /** Given goalRangeName, it finds the Range with all the adjusted assignments
     *
     * ==== example ====
+    * {{{
     * Given
     *
     *  -type hour extends Range(size=5, min=0, max=23, signed=false)
@@ -98,7 +99,7 @@ trait AssignMapResolver {
     *
     *   Returns a map of ("name" -> "makehour, "group" -> "Range",
     *                     "size"->"5", "min"->"10", "max=18", "signed=false")
-    *
+    * }}}
     * ==== Algorithm ====
     *  1. Find the history of parents upto one of the four type groups
     *     * markethour -> hour -> Range
@@ -187,9 +188,11 @@ trait AssignMapResolver {
     * Given a typeNodeName, it returns the group where the typeNode belongs to
     *
     * ==== Example ====
+    * {{{
     * a extend b -> b extends Range
     *
     * Given a, this function returns the string "Range"
+    * }}}
     *
     * @return
     */

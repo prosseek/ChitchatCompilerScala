@@ -12,7 +12,9 @@ target in Compile in doc := baseDirectory.value / "doc/api"
 // libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.6" 
 // If you need to add classpath directory
 // <http://stackoverflow.com/questions/23357490/add-directory-to-classpath-in-build-scala-of-sbt>
-// (fullClasspath in Test) += Attributed.blank(file("./src/test/resources/util/file/"))
+//(fullClasspath in Test) += Attributed.blank(file("./gen/parser/"))
+
+unmanagedSourceDirectories in Compile += baseDirectory.value / "gen"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.6" % "test",

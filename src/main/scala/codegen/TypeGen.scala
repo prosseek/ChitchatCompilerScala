@@ -40,15 +40,15 @@ class TypeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends Gen w
   }
 
   /**
-    * ==== Example Encoding ===
-    *
+    * get the contents for encoding type group
+    * ==== Example Encoding ====
     *  1. get the number of ranges
     *    Given "market time" type name -> time -> Encoding(hour, minute)
     *    "hour" & "minute" is returned. So, we know this encoding has two ranges.
     *  2. From the input parameter, we know the range assignment
-    *    ex) +type "market time" extends time(markethour)
-    *        => from 'markethour' parameter & types, we have history 'markethour' -> 'hour' -> Range
-    *        => we already know we need range for "hour" and "minute"
+    *     * ex) +type "market time" extends time(markethour)
+    *     * =>from 'markethour' parameter & types, we have history 'markethour' -> 'hour' -> Range
+    *     * => we already know we need range for "hour" and "minute"
     *  3. We resolve to get assignments for markethour(hour) & minute
     *
     * {{{
@@ -61,6 +61,7 @@ class TypeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends Gen w
     * }}}
     *
     * @param typeNodeName
+    * @return
     */
   def getContentForEncoding(typeNodeName:String) = {
     val typeNode = getTypeNodeFromName(typeNodeName)

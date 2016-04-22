@@ -69,9 +69,9 @@ class TestTypeGen extends FunSuite
     assert(res == "conditions = List(\"maxlength\", 10)")
 
     res = tg.getContentForString("only a b")
-    print(res)
+    assert(res == "range = List('a', 'b')")
     res = tg.getContentForString("event")
-    print(res)
+    assert(res == "range = List(0, 122)")
   }
 
   test ("gen test string max10") {
