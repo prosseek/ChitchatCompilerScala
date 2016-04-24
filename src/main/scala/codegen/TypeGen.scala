@@ -10,14 +10,6 @@ import scala.collection.mutable.{ListBuffer, Map => MMap}
 
 class TypeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends Gen with AssignMapResolver {
 
-  def getTemplateString(template:String, replacement:Map[String, String]) = {
-    replacement.foldLeft(template)((s:String, x:(String,String)) => ( "#\\{" + x._1 + "\\}" ).r.replaceAllIn( s, x._2 ))
-  }
-
-  def getClassName(name:String) = {
-    name.replace("\"","").capitalize.replace(" ", "_")
-  }
-
   private def getTypeNodeFromName(typeNodeName:String) = {
     val typeNode = typeNodes find (_.name == typeNodeName)
     if (typeNode.isEmpty) throw new RuntimeException(s"No node type ${typeNodeName} found")

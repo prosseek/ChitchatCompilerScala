@@ -18,7 +18,7 @@ import org.scalatest.FunSuite
 class TestAssignMapResolver extends FunSuite with AssignMapResolver {
 
   // def getTypeGroupName(typeNodeName:String, typeNodes:List[TypeNode])
-  val prognode = NodeGenerator.get("./resources/example/input.txt")
+  val prognode = NodeGenerator.get("./resources/unittest_example/type.txt")
   val types = prognode.types.toList
 
   test("getTypeGroupName test") {

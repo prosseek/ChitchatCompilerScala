@@ -5,7 +5,7 @@ import org.scalatest.FunSuite
 
 class TestTypeGen extends FunSuite
 {
-  val prognode = NodeGenerator.get("./resources/example/input.txt")
+  val prognode = NodeGenerator.get("./resources/unittest_example/type.txt")
   val types = prognode.types.toList
 
   test ("find range test") {

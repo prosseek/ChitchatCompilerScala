@@ -6,32 +6,31 @@ prog: (typedef | correlation | situation)+ ;
 typedef: annotation TYPE id EXT  base_type ;
 base_type: id '(' expressions ')' ;
 
-// group
-group: GROUP id '=' grouping ('|' grouping)? ;
-grouping: '(' group_ids ')' ;
-group_ids: ((ID | STRING | grouping) ','?)+ ;
-
 // correlation
 correlation: CORRELATION id '=' (grouping | from_group_name) ;
-from_group_name: 'group.'  id ;
+from_group_name: 'schema.'  id ;
 
 // situation
 situation: SITUATION id '=' constraints ;
 
-// rule
-rule: RULE id '=' grouping ;
+// schema
+schema: annotation SCHEMA id '=' grouping ;
+
+// group
+grouping: '(' group_ids ')' ;
+group_ids: ((ID | STRING | grouping) ','?)+ ;
 
 // define
 define: DEFINE id '=' ;
 
 // summary
 summary: SUMMARY id '=' '{' summary_content '}';
-summary_content: .* ;
+summary_content: .*? ;
 
 // function
 function: FUNCTION id '=' '{' commands '}';
 commands: (command)+;
-command: 'a' ;
+command: 'hello_world' ;
 
 constraints: absolute_constraint | range_constraint ;
 absolute_constraint: '|' id '-' id '|' comparison_operator unit_value  ;
@@ -53,7 +52,7 @@ id: ID | STRING;
 primary_expresion: ID | STRING | constant;
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
 value: INT | FLOAT ;
-unit: 'km' | 'm' | 'min' | 'sec' | 'hour' ;
+unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
 
 TYPE: 'type';
 CORRELATION: 'correlation';
@@ -61,7 +60,7 @@ SITUATION: 'situation';
 
 EXT: 'extends';
 GROUP: 'group';
-RULE: 'rule';
+SCHEMA: 'schema';
 DEFINE: 'define';
 SUMMARY: 'summary';
 FUNCTION: 'function';
