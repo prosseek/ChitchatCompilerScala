@@ -36,6 +36,12 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
     Some(result(0))
   }
 
+  /**
+    * Returns the full resolved type names
+    *
+    * @param name
+    * @return
+    */
   def getCorrelationTypeNames(name:String) : Option[Set[String]] = {
     val result = getCorrelationNode(name)
     if (result.isEmpty) return None

@@ -5,7 +5,7 @@ import scala.collection.mutable.{ListBuffer, Set => MSet}
 case class CorrelationNode(override val name:String) extends Node(name = name) {
   val elements = ListBuffer[String]()
 
-  /** Stores the type names. A progname node has multiple correlatin nodes.
+  /** Stores the type names. A progname node has multiple correlation nodes.
     *
     * @param typeNames
     * @return
@@ -14,7 +14,7 @@ case class CorrelationNode(override val name:String) extends Node(name = name) {
     elements ++= typeNames
   }
 
-  /** Returns all the name of the correlated names.
+  /** Returns all the name of the fully resolved correlated names.
     *
     * ==== Example ====
     * {{{
@@ -26,15 +26,13 @@ case class CorrelationNode(override val name:String) extends Node(name = name) {
     * }}}
     *
     * ==== Algorithm ====
-    *  {{{
-    *    1. given name, put all the elements.
-    *       (s, z, h, p, u)
-    *    2. iterate
-    *       1. if name is in the set, replace
-    *          (k, l, z, h, p, u)
-    *       2. iterate from the start
-    *    3. when all elements are type (not correlation), stops
-    *  }}}
+    *  1. given name, put all the elements.
+    *     `(s, z, h, p, u)`
+    *  1. iterate
+    *     1. if name is in the set, replace
+    *        `(k, l, z, h, p, u)`
+    *     1. iterate from the start
+    *  1. when all elements are type, not correlation, stops
     *
     */
   def get(correlationNodes:ListBuffer[CorrelationNode]) : Set[String] = {

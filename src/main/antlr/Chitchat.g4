@@ -11,7 +11,7 @@ correlation: CORRELATION id '=' (grouping | from_group_name) ;
 from_group_name: 'schema.'  id ;
 
 // situation
-situation: SITUATION id '=' constraints ;
+situation: SITUATION function_call '=' constraints ;
 
 // schema
 schema: annotation SCHEMA id '=' grouping ;
@@ -27,15 +27,17 @@ define: DEFINE id '=' ;
 summary: SUMMARY id '=' '{' summary_content '}';
 summary_content: .*? ;
 
+// value
+value: function_call '=' '{' (assignment)+ '}' ;
+
 // function
-function: FUNCTION id '=' '{' commands '}';
+function: FUNCTION function_call '=' '{' commands '}';
 commands: (command)+;
 command: 'hello_world' ;
 
 constraints: absolute_constraint | range_constraint ;
 absolute_constraint: '|' id '-' id '|' comparison_operator unit_value  ;
 range_constraint: unit_value comparison_operator id comparison_operator unit_value ;
-
 
 ids: (id ','?)+;
 expressions: (expression ','?)+;
@@ -46,14 +48,14 @@ function_call: ID '(' params ')';
 params: (primary_expresion ','?)* ;
 annotation: ('+'|'-');
 comparison_operator: '<'|'>'|'<='|'>=';
-unit_value: value (unit)?;
+unit_value: const_value (unit)?;
 
 id: ID | STRING;
-primary_expresion: ID | STRING | constant;
+primary_expresion: ID | STRING | constant | list ;
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
-value: INT | FLOAT ;
+const_value: INT | FLOAT ;
 unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
-
+list: '[' (const_value ','?)+ ']' ;
 TYPE: 'type';
 CORRELATION: 'correlation';
 SITUATION: 'situation';

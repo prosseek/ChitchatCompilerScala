@@ -32,24 +32,31 @@ class TypeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends Gen w
   }
 
   /**
-    * get the contents for encoding type group
+    * get the '''contents''' for encoding type group
+    *
     * ==== Example Encoding ====
-    *  1. get the number of ranges
-    *    Given "market time" type name -> time -> Encoding(hour, minute)
-    *    "hour" & "minute" is returned. So, we know this encoding has two ranges.
-    *  2. From the input parameter, we know the range assignment
-    *     * ex) +type "market time" extends time(markethour)
-    *     * =>from 'markethour' parameter & types, we have history 'markethour' -> 'hour' -> Range
-    *     * => we already know we need range for "hour" and "minute"
-    *  3. We resolve to get assignments for markethour(hour) & minute
+    * {{{
+    *   -type hour extends Range(size=5, min=0, max=23, signed=false)
+    *   -type minute extends Range(size=6, min=0, max=59, signed=false)
+    *   +type time extends Encoding(hour, minute)
+    *   -type markethour extends hour(min=10, max=18)
+    *   +type "market time" extends time(markethour)
+    * }}}
+    *
+    *  1. Given "market time" type name: `time -> Encoding(hour, minute)`
+    *    `hour` & `minute` is returned. So, we know this encoding has two ranges.
+    *  1. From the input parameter, we know the range assignment
+    *     - We start from `markethour` in `+type "market time" extends time(markethour)`
+    *     - from 'markethour' parameter, we know it is range type group (`markethour` -> `hour` -> Range)
+    *     - we already know we need range for `hour` and `minute` from the first step.
+    *  1. We resolve to get assignments for `markethour` which overwrites the setup of `hour` & `minute`
     *
     * {{{
-    *    class D extends Encoding(
-    *    name = "day",
+    *    class Market_time extends Encoding(
+    *    name = "market time",
     *    Array[Range](
-    *      new Range(name = "y", size = 7, min = -64, max = 63, signed = true),
-    *      new Range(name = "m", size = 4, min =   1, max = 12, signed = false),
-    *      new Range(name = "d", size = 5, min =   1, max = 31, signed = false)))
+    *      new Range(name = "hour",   size = 5, min = 10, max = 18, signed = false),
+    *      new Range(name = "minute", size = 6, min =  0, max = 59, signed = false)))
     * }}}
     *
     * @param typeNodeName
@@ -115,7 +122,9 @@ class TypeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends Gen w
 
   /**
     * ==== Example ====
-    * +type temperature extends Float(min=-50.0, max=90.0)
+    * {{{
+    *   +type temperature extends Float(min=-50.0, max=90.0)
+    * }}}
     *
     * @param typeNodeName
     * @return

@@ -6,14 +6,14 @@ class TestProgNode extends FunSuite {
   val prognode = NodeGenerator.get("./resources/unittest_example/correlation.txt")
 
   /**
-    * correlation a = (x, y, z, (h, p, u))
+    * correlation a = (s, z, (h, p, u))
     * correlation z = (p, q, (r, s))
     * correlation s = (k, l)
     */
   test ("simple") {
     val a = prognode.getCorrelationNode("a").get
     assert(a.name == "a")
-    assert(a.elements.size == 5)
+    print(a.elements.mkString == "suphz")
 
     assert(prognode.getCorrelationTypeNames("a").get.toString == "Set(u, q, l, p, h, r, k)")
   }

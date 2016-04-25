@@ -6,8 +6,6 @@ import collection.mutable.{ListBuffer, Map => MMap}
 
 trait AssignMapResolver {
 
-  /* PRIVATE METHODS */
-
   private def isParentInGroups(parentName: String) = {
     val set = Set("Range", "Encoding", "String", "Float")
     set.contains(parentName)
@@ -17,9 +15,10 @@ trait AssignMapResolver {
     * Given a history of typenodes (the later the higher in hierarchy, superclass)
     *
     * ==== Example ====
+    * {{{
     *  when a(x = 10, y = 20) -> b(x = 20) -> c (z = 30) when a < b < c
     *  the output is (x = 10, y = 20, z = 30) the subclass values overwrite the superclass values
-    *
+    * }}}
     * @param history
     * @return
     */
@@ -56,12 +55,13 @@ trait AssignMapResolver {
     * Given a range time, returns all the hierarchical history up to the type group.
     *
     * ==== Example ====
+    * {{{
     *  1. a extends b
     *  2. b extends c
     *  3. c extends Range
     *
     *  input : a => output [a][b][c] as a list of nodes
-    *
+    * }}}
     * @param goalRangeName
     * @param typeNodes
     * @return
@@ -101,17 +101,18 @@ trait AssignMapResolver {
     *                     "size"->"5", "min"->"10", "max=18", "signed=false")
     * }}}
     * ==== Algorithm ====
+    *
     *  1. Find the history of parents upto one of the four type groups
-    *     * markethour -> hour -> Range
-    *     * hour has Assign expressions
-    *  2. In reverse order, fill in the map
-    *     * from hour set size/min/max/signed
-    *     * from markethour update min/max
-    *  3. return the map
+    *     - markethour -> hour -> Range
+    *     - hour has Assign expressions
+    *  1. In reverse order, fill in the map
+    *     - from hour set size/min/max/signed
+    *     - from markethour update min/max
+    *  1. return the map
     *
     * ==== Note ====
     *  1. It uses `getHistory` to get all the type nodes from the input to the node whose paresnt is Group Node
-    *  2. It uses `getAssignMapFromHistory` to build assignment map from retrieved history of TypeNodes.
+    *  1. It uses `getAssignMapFromHistory` to build assignment map from retrieved history of TypeNodes.
     */
   def getAssignMapFromRangeName(rangeName:String, typeNodes:List[TypeNode]) = {
     val map = MMap[String, String]()
@@ -131,9 +132,10 @@ trait AssignMapResolver {
 
   /**
     * We support only two cases
-    * 1. function call
-    * 2. assignment
-    * 3. range
+    *
+    *   1. function call
+    *   1. assignment
+    *   1. range
     *
     * ==== Example ====
     * {{{
@@ -202,11 +204,11 @@ trait AssignMapResolver {
       * node (not name)
       *
       * ==== Example ====
-      *
+      * {{{
       *  a extend b, b extends c, c extends Range
       *
       *  getNodeWhoseParentIsTypeGroup(a) returns [c extends Range] as a typeNode
-      *
+      * }}}
       * @param typeNode
       * @return
       */
@@ -244,14 +246,15 @@ trait AssignMapResolver {
     * and returns
     *
     * ==== Example ====
-    *  type a extends b -> typ b extends Encoding (x, y)
+    * {{{
+    *  type a extends b -> type b extends Encoding (x, y)
     *
-    *  Given a (name), it returns x and y as a list of strings List(x,y)
-    *
+    *  Given a, it returns x and y as a list of strings List(x,y)
+    * }}}
     * ==== Warning ====
     *  1. It assumes that the Encoding should have parameters as primary expression, not assignment.
-    *     In other words Encoding(x, y) not Encoding(x = 10, y = 20)
-    *  2. The typeNodeName should be in "Encoding group" otherwise, it will raise an error.
+    *     In other words `Encoding(x, y)` not `Encoding(x = 10, y = 20)`
+    *  1. The typeNodeName should be in "Encoding group" otherwise, it will raise an error.
     *
     * @param typeNodeName
     */
