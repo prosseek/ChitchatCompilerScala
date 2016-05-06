@@ -1,4 +1,4 @@
-package codegen
+package plugingen
 
 /**
   * Created by smcho on 4/18/16.

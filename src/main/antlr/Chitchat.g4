@@ -7,11 +7,10 @@ typedef: annotation TYPE id EXT  base_type ;
 base_type: id '(' expressions ')' ;
 
 // correlation
-correlation: CORRELATION id '=' (grouping | from_group_name) ;
-from_group_name: 'schema.'  id ;
+correlation: CORRELATION id '=' grouping | '(' function_call ')';
 
 // situation
-situation: SITUATION function_call '=' constraints ;
+situation: SITUATION id parenparams? '=' constraints ;
 
 // schema
 schema: annotation SCHEMA id '=' grouping ;
@@ -19,9 +18,6 @@ schema: annotation SCHEMA id '=' grouping ;
 // group
 grouping: '(' group_ids ')' ;
 group_ids: ((ID | STRING | grouping) ','?)+ ;
-
-// define
-define: DEFINE id '=' ;
 
 // summary
 summary: SUMMARY id '=' '{' summary_content '}';
@@ -31,20 +27,28 @@ summary_content: .*? ;
 value: function_call '=' '{' (assignment)+ '}' ;
 
 // function
-function: FUNCTION function_call '=' '{' commands '}';
-commands: (command)+;
-command: 'hello_world' ;
+function: FUNCTION function_call '=' command_block ;
+command_block: '{' (command)+ '}';
+command: assignment | while_loop | if_else | function_call ;
 
 constraints: absolute_constraint | range_constraint ;
 absolute_constraint: '|' id '-' id '|' comparison_operator unit_value  ;
 range_constraint: unit_value comparison_operator id comparison_operator unit_value ;
+
+while_loop: WHILE '(' expression ')' command_block ;
+if_else: IF '(' expression ')' command_block (ELSE command_block)? ;
+
+WHILE: 'while';
+IF: 'if';
+ELSE: 'else';
 
 ids: (id ','?)+;
 expressions: (expression ','?)+;
 expression: comparison | assignment | function_call | primary_expresion;
 comparison: ID comparison_operator primary_expresion;
 assignment: ID '=' primary_expresion ;
-function_call: ID '(' params ')';
+function_call: ID parenparams;
+parenparams: '(' params ')' ;
 params: (primary_expresion ','?)* ;
 annotation: ('+'|'-');
 comparison_operator: '<'|'>'|'<='|'>=';
@@ -56,10 +60,10 @@ constant: INT | FLOAT | TRUE | FALSE | CHAR ;
 const_value: INT | FLOAT ;
 unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
 list: '[' (const_value ','?)+ ']' ;
+
 TYPE: 'type';
 CORRELATION: 'correlation';
 SITUATION: 'situation';
-
 EXT: 'extends';
 GROUP: 'group';
 SCHEMA: 'schema';

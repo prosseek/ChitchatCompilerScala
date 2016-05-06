@@ -8,7 +8,7 @@ import org.scalatest.FunSuite
   */
 class TestCorrelationGen extends FunSuite
 {
-  val prognode = NodeGenerator.get("./resources/unittest_example/correlation.txt")
+  val prognode = NodeGenerator.get("./resources/unittest_example/correlation_simple.txt")
 
   test ("simple") {
     val cs = prognode.correlations

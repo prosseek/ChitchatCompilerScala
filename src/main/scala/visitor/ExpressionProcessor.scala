@@ -36,7 +36,7 @@ trait ExpressionProcessor {
     else if (ctx.function_call() != null) {
       val function_call = ctx.function_call()
       val ID = function_call.ID().getText()
-      val pe = function_call.params()
+      val pe = function_call.parenparams()
 
       val params = ListBuffer[Any]()
 
@@ -47,7 +47,7 @@ trait ExpressionProcessor {
           params += it.next().getText()
         }
       }
-      expression = FunctionCallNode(ID = ID, params = params.toSeq)
+      expression = FunctionNode(ID = ID, params = params.toSeq)
     }
     // primary expression requires its own processing
     else if (ctx.primary_expresion() != null) {

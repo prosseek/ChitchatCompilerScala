@@ -9,6 +9,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with ExpressionProcessor
   with GroupingProcessor
   with PrimaryExpressionProcessor
+  with SituationProcessor
 {
   var prognode: ProgNode = _
 
@@ -84,6 +85,10 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
 
     }
     cornode
+  }
+
+  override def visitSituation(ctx: ChitchatParser.SituationContext) : SituationNode = {
+    process(ctx)
   }
 
   override def visitExpression(ctx: ChitchatParser.ExpressionContext) : Node = {

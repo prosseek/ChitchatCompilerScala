@@ -8,6 +8,10 @@ import scala.collection.mutable.ListBuffer
 case class ProgNode(override val name:String = "") extends Node(name = name) {
   val types = ListBuffer[TypeNode]()
   val correlations = ListBuffer[CorrelationNode]()
+  val situations = ListBuffer[SituationNode]()
+  val schemas = ListBuffer[SchemaNode]()
+  val values = ListBuffer[ValueNode]()
+  val functions = ListBuffer[FunctionNode]()
 
   /**
     * Read nodes into fields

@@ -2,7 +2,7 @@ package node
 
 import org.scalatest.FunSuite
 
-class TestProgNode extends FunSuite {
+class TestCorrelationNode extends FunSuite {
   val prognode = NodeGenerator.get("./resources/unittest_example/correlation_simple.txt")
 
   /**

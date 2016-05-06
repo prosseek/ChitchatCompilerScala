@@ -12,11 +12,11 @@ object NodeGenerator {
     var fileInput = new File(filePath)
     var fileInputStream = new FileInputStream(fileInput)
 
-    val input: ANTLRInputStream = new ANTLRInputStream(fileInputStream)
-    val lexer: ChitchatLexer = new ChitchatLexer(input)
-    val tokens: CommonTokenStream = new CommonTokenStream(lexer)
-    val parser: ChitchatParser = new ChitchatParser(tokens)
-    val tree = parser.prog
+    val input   = new ANTLRInputStream(fileInputStream)
+    val lexer   = new ChitchatLexer(input)
+    val tokens  = new CommonTokenStream(lexer)
+    val parser  = new ChitchatParser(tokens)
+    val tree    = parser.prog
     val visitor = new ChitchatVisitor
     visitor.visit(tree)
     visitor.prognode

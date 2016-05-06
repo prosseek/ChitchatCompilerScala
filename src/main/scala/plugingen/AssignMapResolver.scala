@@ -1,6 +1,6 @@
-package codegen
+package plugingen
 
-import node.{AssignNode, FunctionCallNode, PrimaryExpressionNode, TypeNode}
+import node.{AssignNode, FunctionNode, PrimaryExpressionNode, TypeNode}
 
 import collection.mutable.{ListBuffer, Map => MMap}
 
@@ -19,6 +19,7 @@ trait AssignMapResolver {
     *  when a(x = 10, y = 20) -> b(x = 20) -> c (z = 30) when a < b < c
     *  the output is (x = 10, y = 20, z = 30) the subclass values overwrite the superclass values
     * }}}
+ *
     * @param history
     * @return
     */
@@ -62,6 +63,7 @@ trait AssignMapResolver {
     *
     *  input : a => output [a][b][c] as a list of nodes
     * }}}
+ *
     * @param goalRangeName
     * @param typeNodes
     * @return
@@ -156,7 +158,7 @@ trait AssignMapResolver {
     typeNode.expressions foreach {
       expression => {
         expression match {
-          case expression:FunctionCallNode => {
+          case expression: FunctionNode => {
             val function_name = expression.ID
             val parameters = expression.params
 
@@ -209,6 +211,7 @@ trait AssignMapResolver {
       *
       *  getNodeWhoseParentIsTypeGroup(a) returns [c extends Range] as a typeNode
       * }}}
+ *
       * @param typeNode
       * @return
       */

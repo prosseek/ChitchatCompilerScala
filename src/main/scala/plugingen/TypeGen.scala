@@ -1,4 +1,4 @@
-package codegen
+package plugingen
 
 import node.{AssignNode, Node, PrimaryExpressionNode, TypeNode}
 

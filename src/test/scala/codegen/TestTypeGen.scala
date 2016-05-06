@@ -2,6 +2,7 @@ package codegen
 
 import node.NodeGenerator
 import org.scalatest.FunSuite
+import plugingen.TypeGen
 
 class TestTypeGen extends FunSuite
 {
