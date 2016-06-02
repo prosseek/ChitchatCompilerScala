@@ -2,7 +2,7 @@ package codegen
 
 import node.{NodeGenerator, TypeNode}
 import org.scalatest.FunSuite
-import plugingen.AssignMapResolver
+import codegen.AssignMapResolver
 
 /*
   +type hello extends Range(min=-10, max=10, size=5, signed=true)

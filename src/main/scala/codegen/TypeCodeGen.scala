@@ -1,4 +1,4 @@
-package plugingen
+package codegen
 
 import node.{AssignNode, Node, PrimaryExpressionNode, TypeNode}
 
@@ -8,7 +8,7 @@ import scala.collection.mutable.{ListBuffer, Map => MMap}
 //       +type Event extends String(alphanum), +type Name extends String(length < 10)
 //
 
-class TypeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends Gen with AssignMapResolver {
+class TypeCodeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends CodeGen with AssignMapResolver {
 
   private def getTypeNodeFromName(typeNodeName:String) = {
     val typeNode = typeNodes find (_.name == typeNodeName)

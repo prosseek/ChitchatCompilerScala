@@ -11,10 +11,6 @@ class TestProgNode extends FunSuite {
     * correlation s = (k, l)
     */
   test ("simple") {
-    val a = prognode.getCorrelationNode("a").get
-    assert(a.name == "a")
-    assert(a.elements.mkString == "suphz")
 
-    assert(prognode.getCorrelationTypeNames("a").get.toString == "Set(u, q, l, p, h, r, k)")
   }
 }

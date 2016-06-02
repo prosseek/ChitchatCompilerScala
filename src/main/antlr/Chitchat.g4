@@ -1,65 +1,59 @@
 grammar Chitchat;
 
-prog: (typedef | correlation | situation)+ ;
+prog: (typedef | correlation | situation | schema | valuedef | function | command )+ ;
 
 // typedef
 typedef: annotation TYPE id EXT  base_type ;
 base_type: id '(' expressions ')' ;
 
 // correlation
-correlation: CORRELATION id '=' grouping | '(' function_call ')';
+correlation: CORRELATION id '=' '(' expressions ')' ;
 
 // situation
-situation: SITUATION id parenparams? '=' constraints ;
+situation: SITUATION id '(' expressions ')' '=' expression ;
 
 // schema
-schema: annotation SCHEMA id '=' grouping ;
-
-// group
-grouping: '(' group_ids ')' ;
-group_ids: ((ID | STRING | grouping) ','?)+ ;
-
-// summary
-summary: SUMMARY id '=' '{' summary_content '}';
-summary_content: .*? ;
+schema: annotation SCHEMA id '=' '(' expressions ')' ('|' '(' expressions ')' )* ;
 
 // value
-value: function_call '=' '{' (assignment)+ '}' ;
+valuedef: VALUE id '=' block ;
 
 // function
-function: FUNCTION function_call '=' command_block ;
-command_block: '{' (command)+ '}';
-command: assignment | while_loop | if_else | function_call ;
+function: FUNCTION function_call '=' block ;
 
-constraints: absolute_constraint | range_constraint ;
-absolute_constraint: '|' id '-' id '|' comparison_operator unit_value  ;
-range_constraint: unit_value comparison_operator id comparison_operator unit_value ;
+// command
+command: '{' (expression ';'?)+ '}' ;
 
-while_loop: WHILE '(' expression ')' command_block ;
-if_else: IF '(' expression ')' command_block (ELSE command_block)? ;
-
-WHILE: 'while';
-IF: 'if';
-ELSE: 'else';
+///////////////////////////////////////
+// EXPRESSION
 
 ids: (id ','?)+;
 expressions: (expression ','?)+;
-expression: comparison | assignment | function_call | primary_expresion;
-comparison: ID comparison_operator primary_expresion;
-assignment: ID '=' primary_expresion ;
-function_call: ID parenparams;
-parenparams: '(' params ')' ;
-params: (primary_expresion ','?)* ;
-annotation: ('+'|'-');
-comparison_operator: '<'|'>'|'<='|'>=';
-unit_value: const_value (unit)?;
+expression: function_call | value | assignment | comparison ;
+
+comparison: '(' expression comparison_operator expression ')' ;
+value: id | constant | list ;
+function_call: ID '(' expressions ')' ;
+assignment: ID '=' expression ;
+absolute: '|' expression '-' expression '|' ;
+
+while_loop: WHILE '(' expression ')' block ;
+if_else: IF '(' expression ')' block (ELSE block)? ;
+
+block: '{' expressions '}';
+
+/////////////////////////////////
 
 id: ID | STRING;
-primary_expresion: ID | STRING | constant | list ;
+annotation: ('+'|'-');
+comparison_operator: '<'|'>'|'<='|'>=';
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
-const_value: INT | FLOAT ;
 unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
-list: '[' (const_value ','?)+ ']' ;
+unit_value: constant (unit)?;
+list: '[' (constant ','?)+ ']' ;
+
+////////////////////////////////////////
+// TERMINAL
 
 TYPE: 'type';
 CORRELATION: 'correlation';
@@ -70,13 +64,17 @@ SCHEMA: 'schema';
 DEFINE: 'define';
 SUMMARY: 'summary';
 FUNCTION: 'function';
+WHILE: 'while';
+IF: 'if';
+ELSE: 'else';
+VALUE: 'value';
 
 CHAR: '\''[a-zA-Z]'\'';
 TRUE: 'true';
 FALSE: 'false'; 
 INT: ('+'|'-')?[0-9]+;
 FLOAT: ('+'|'-')?[0-9]+'.'[0-9]+;
-ID : [a-zA-Z][a-zA-Z0-9?]* ;
+ID : [_a-zA-Z][a-zA-Z0-9?]* ;
 STRING : '"' .*? '"' ;
 
 COMMENT: '//' ~( '\r' | '\n' )*  -> skip ;

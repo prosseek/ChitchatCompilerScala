@@ -12,8 +12,8 @@ trait PrimaryExpressionProcessor {
     * @param ctx the parse tree
     *
     */
-
-  def process(ctx: ChitchatParser.Primary_expresionContext) = {
+/*
+  def process(ctx: ChitchatParser.Primary_expresionContext, o:ChitchatVisitor) = {
     var value:String = ""
     var valueType:String = ""
 
@@ -54,4 +54,5 @@ trait PrimaryExpressionProcessor {
     }
     PrimaryExpressionNode(valueType = valueType, value = value)
   }
+  */
 }

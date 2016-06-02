@@ -1,11 +1,9 @@
 package visitor
 
 import node.SituationNode
-import parser.ChitchatParser.{GroupingContext, SituationContext}
+import org.antlr.v4.runtime.ParserRuleContext
+import parser.ChitchatParser.SituationContext
 
-/**
-  * Created by smcho on 4/26/16.
-  */
 trait SituationProcessor {
   /**
     *
@@ -21,8 +19,10 @@ trait SituationProcessor {
     *
     * @param ctx the parse tree
     *     */
-  def process(ctx:SituationContext) : SituationNode = {
-    val sitnode = SituationNode(name = ctx.id().getText())
-    sitnode
+  // def process(ctx:SituationContext, o:ChitchatVisitor) : SituationNode = {
+  def process(ctx:SituationContext, o:ChitchatVisitor) : SituationNode = {
+    //val sitnode = SituationNode(name = ctx.id().getText())
+    //sitnode
+    null
   }
 }

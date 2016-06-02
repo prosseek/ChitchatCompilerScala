@@ -12,6 +12,7 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
   val schemas = ListBuffer[SchemaNode]()
   val values = ListBuffer[ValueNode]()
   val functions = ListBuffer[FunctionNode]()
+  val commands = ListBuffer[CommandNode]()
 
   /**
     * Read nodes into fields
@@ -22,7 +23,12 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
   def add(input:Node) = {
     input match {
       case TypeNode(name, annotation, base_name) => types += input.asInstanceOf[TypeNode]
-      case CorrelationNode(name) => correlations += input.asInstanceOf[CorrelationNode]
+      case CorrelationNode(name) =>                 correlations += input.asInstanceOf[CorrelationNode]
+      case SituationNode(name) =>                   situations += input.asInstanceOf[SituationNode]
+      case SchemaNode(name) =>                      schemas += input.asInstanceOf[SchemaNode]
+      case ValueNode(name) =>                       values += input.asInstanceOf[ValueNode]
+      case FunctionNode(name, params) =>            functions += input.asInstanceOf[FunctionNode]
+      case CommandNode(name) =>                     commands += input.asInstanceOf[CommandNode]
       case _ => throw new RuntimeException(s"wrong node type")
     }
   }

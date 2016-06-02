@@ -1,15 +1,17 @@
 package visitor
 
-import parser.{ChitchatBaseVisitor, ChitchatParser}
+import parser.ChitchatBaseVisitor
+import parser.ChitchatParser._
 import node._
 
-import scala.collection.mutable.ListBuffer
-
 class ChitchatVisitor extends ChitchatBaseVisitor[Node]
+  with TypedefProcessor
+  with CorrelationProcessor
   with ExpressionProcessor
-  with GroupingProcessor
-  with PrimaryExpressionProcessor
   with SituationProcessor
+  with SchemaProcessor
+  with FunctionProcessor
+  with CommandProcessor
 {
   var prognode: ProgNode = _
 
@@ -21,7 +23,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
     * @param ctx the parse tree
     *
     */
-  override  def visitProg(ctx: ChitchatParser.ProgContext) = {
+  override  def visitProg(ctx: ProgContext) = {
     prognode = new ProgNode()
 
     /* ctx has corresponding typedef(), correlation(), ...
@@ -38,65 +40,13 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
     prognode
   }
 
+  // prog's children visitors
+  override def visitTypedef(ctx: TypedefContext) : TypeNode = process(ctx, this)
+  override def visitCorrelation(ctx: CorrelationContext) : CorrelationNode = process(ctx, this)
+  override def visitSituation(ctx: SituationContext) : SituationNode = process(ctx, this)
+  override def visitSchema(ctx: SchemaContext) : SchemaNode = process(ctx, this)
+  override def visitFunction(ctx: FunctionContext) : FunctionNode = process(ctx, this)
+  override def visitCommand(ctx: CommandContext) : CommandNode = process(ctx, this)
 
-  /**
-    * {{{
-    *   typedef: annotation TYPE id EXT  base_type ;
-    *   base_type: id '(' expressions ')' ;
-    * }}}
-    *
-    * @param ctx the parse tree
-    */
-  override def visitTypedef(ctx: ChitchatParser.TypedefContext) : TypeNode = {
-    val basetype = ctx.base_type()
-    val annotation = ctx.annotation().getText()
-    val typenode = TypeNode(name = ctx.id().getText().replace("\"", ""),
-      annotation = annotation,
-      base_name = basetype.id().getText().replace("\"", ""))
-    val it = basetype.expressions().children.iterator()
-    while(it.hasNext) {
-      val res = it.next()
-      // res is comma separated assignemnt
-      if (res.getText() != ",") {
-        typenode.add(visit(res).asInstanceOf[ExpressionNode])
-      }
-    }
-    typenode
-  }
-
-  /**
-    * ==== Grammar ====
-    * // correlation
-    * {{{
-    *   correlation: CORRELATION id '=' (grouping | from_group_name) ;
-    *   from_group_name: 'schema.'  id ;
-    *   grouping: '(' group_ids ')' ;
-    *   group_ids: ((ID | STRING | grouping) ','?)+ ;
-    * }}}
-    *
-    * @param ctx the parse tree
-    *     */
-  override def visitCorrelation(ctx: ChitchatParser.CorrelationContext) : CorrelationNode = {
-    val cornode = CorrelationNode(name = ctx.id().getText())
-    if (ctx.grouping() != null) {
-      cornode.add(process(ctx.grouping()).toList)
-    }
-    else if (ctx.from_group_name() != null) {
-
-    }
-    cornode
-  }
-
-  override def visitSituation(ctx: ChitchatParser.SituationContext) : SituationNode = {
-    process(ctx)
-  }
-
-  override def visitExpression(ctx: ChitchatParser.ExpressionContext) : Node = {
-    // **this** is necessary because process requires PrimaryExpressionProcessor
-    process(ctx, this)
-  }
-
-  override def visitPrimary_expresion(ctx: ChitchatParser.Primary_expresionContext) = {
-    process(ctx)
-  }
+  override def visitExpression(ctx: ExpressionContext) : ExpressionNode = process(ctx, this)
 }

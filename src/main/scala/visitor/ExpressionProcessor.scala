@@ -19,7 +19,8 @@ trait ExpressionProcessor {
     * @return
     */
 
-  def process(ctx: ExpressionContext, o:ChitchatVisitor) = {
+  def process(ctx: ExpressionContext, o:ChitchatVisitor) : ExpressionNode = {
+    /*
     if (ctx.comparison() != null) {
       val node = o.visit(ctx.comparison().primary_expresion())
       expression = ComparisonNode(ID = ctx.comparison().ID().getText(),
@@ -57,5 +58,7 @@ trait ExpressionProcessor {
       throw new RuntimeException(s"Error expression wrong ${ctx.getText()}")
     }
     expression
+    */
+    null
   }
 }

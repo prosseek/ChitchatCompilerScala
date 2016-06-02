@@ -1,8 +1,6 @@
 package visitor
 
 import parser.ChitchatParser
-import parser.ChitchatParser.GroupingContext
-
 import collection.mutable.{Set => MSet}
 /**
   * Processes the group_ids
@@ -13,7 +11,7 @@ import collection.mutable.{Set => MSet}
   *
   */
 trait GroupingProcessor {
-
+/*
   def process(ctx:GroupingContext) : Set[String] = {
     val nameSet = MSet[String]()
     val group_ids = ctx.group_ids()
@@ -30,4 +28,5 @@ trait GroupingProcessor {
     }
     nameSet.toSet
   }
+  */
 }
