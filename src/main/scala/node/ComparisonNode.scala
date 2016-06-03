@@ -3,6 +3,6 @@ package node
 case class ComparisonNode(
                           override val name:String,
                           val op:String,
-                          val expression1:ExpressionNode,
-                          val expression2:ExpressionNode) extends Node(name = name)
+                          val id:IdNode,
+                          val expression:ExpressionNode) extends Node(name = name)
 

@@ -1,6 +1,6 @@
 package visitor
 
-import node.{ComparisonNode, ExpressionNode, ExpressionsNode}
+import node._
 import parser.ChitchatParser.ComparisonContext
 
 /**
@@ -9,12 +9,12 @@ import parser.ChitchatParser.ComparisonContext
 trait ComparisonProcessor {
   def process(ctx: ComparisonContext, o:ChitchatVisitor) : ComparisonNode = {
 
-    val expression1:ExpressionNode = o.visit(ctx.expression(0)).asInstanceOf[ExpressionNode]
-    val expression2:ExpressionNode = o.visit(ctx.expression(1)).asInstanceOf[ExpressionNode]
+    val id:IdNode = o.visit(ctx.id).asInstanceOf[IdNode]
+    val expression:ExpressionNode = o.visit(ctx.expression).asInstanceOf[ExpressionNode]
 
     // comparison_operator: '<'|'>'|'<='|'>=';
     val operator = ctx.comparison_operator().getText()
 
-    ComparisonNode(name = ctx.getText(), expression1 = expression1, expression2 = expression2, op = operator)
+    ComparisonNode(name = ctx.getText(), id = id, expression = expression, op = operator)
   }
 }

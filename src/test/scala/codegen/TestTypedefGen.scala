@@ -1,8 +1,7 @@
 package codegen
 
-import node.NodeGenerator
+import node._
 import org.scalatest.FunSuite
-import codegen.TypeCodeGen
 
 class TestTypedefGen extends FunSuite
 {
@@ -24,7 +23,9 @@ class TestTypedefGen extends FunSuite
       "min" -> "10", "max" -> "18", "size" -> "5", "signed" -> "false")
     assert(result.toList.sorted == map1.toList.sorted)
 
-    val expected = "new Range(name = \"markethour\", size = \"5\", min = \"10\", max = \"18\", signed=\"false\")"
+    val expected = "new Range(name = \"markethour\", size = 5, min = 10, max = 18, signed=false)"
+
+    //println(tg.rangeMapToString(map1))
     assert(tg.rangeMapToString(map1) == expected)
   }
 
@@ -44,9 +45,16 @@ class TestTypedefGen extends FunSuite
   }
 
   test("getContentForEncoding test") {
+
+    // hour's min/max is updated from min = 0, max = 23
+    // hour (size=5, min=10, max=18, signed=false)
+    // minute (size=6, min=0, max=59, signed=false)`
+
     val tg = new TypeCodeGen(typeNode=null, typeNodes = types)
     val res = tg.getContentForEncoding("market time")
-    val expected = """Array[Range](new Range(name = "hour", size = 5, min = 10, max = 18, signed = false),new Range(name = "minute", size = 6, min = 0, max = 59, signed = false))"""
+    val expected =
+      """Array[Range](new Range(name = "hour", size = 5, min = 10, max = 18, signed = false),new Range(name = "minute", size = 6, min = 0, max = 59, signed = false))""".stripMargin
+    //println(res)
     assert(res == expected)
   }
 
@@ -68,7 +76,7 @@ class TestTypedefGen extends FunSuite
     val tg = new TypeCodeGen(typeNode=null, typeNodes = types)
     var res = tg.getContentForString("max10")
     assert(res == "conditions = List(\"maxlength\", 10)")
-
+    //println(res)
     res = tg.getContentForString("only a b")
     assert(res == "range = List('a', 'b')")
     res = tg.getContentForString("event")

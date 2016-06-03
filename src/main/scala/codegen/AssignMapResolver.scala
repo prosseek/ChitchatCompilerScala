@@ -4,6 +4,15 @@ import node.{AssignmentNode, FunctionNode, ExpressionsNode, TypedefNode}
 
 import collection.mutable.{ListBuffer, Map => MMap}
 
+/**
+  * === Nomenclature ===
+  * Group Node: Range/Encoding/String/Float
+  * History: a extends b, b extends c => the history is [a, b, c]
+  * === Idea ===
+  * 1. assign map appraoch: we make a map that contains the information to fill in the template
+  *
+  */
+
 trait AssignMapResolver {
 
   private def isParentInGroups(parentName: String) = {
@@ -11,10 +20,10 @@ trait AssignMapResolver {
     set.contains(parentName)
   }
 
-  /**
-    * Given a history of typenodes (the later the higher in hierarchy, superclass)
+  /** Returns an assignment map (subclass values overwrites the superclass values)
+    * Given a history of typedefnodes (the later in hierarchy means superclass)
     *
-    * === typedefNode ===
+    * ==== typedefNode ====
     * {{{
     * val assignments = ListBuffer[AssignmentNode]()
     * var function_call:Function_callNode = null
@@ -23,8 +32,11 @@ trait AssignMapResolver {
     *
     * ==== Example ====
     * {{{
-    *  when a(x = 10, y = 20) -> b(x = 20) -> c (z = 30) when a < b < c
-    *  the output is (x = 10, y = 20, z = 30) the subclass values overwrite the superclass values
+    *  when a(x = 10, y = 20) -> b(x = 20) -> c (z = 30) when a < b < c (c is superclass of b)
+    *  1. z = 30 (super class)
+    *  2. x = 20, z = 30
+    *  3. x = 10 (overwitten), y = 20, z = 30
+    *  the output is (x = 10, y = 20, z = 30)
     * }}}
  *
     * @param history
@@ -36,7 +48,7 @@ trait AssignMapResolver {
       typeNode => {
         typeNode.assignments foreach {
           assignment => { // AssignmentNode
-            val key = assignment.ID
+            val key = assignment.id
             map(key) = assignment.getValueInString(key)
           }
         }
@@ -45,20 +57,20 @@ trait AssignMapResolver {
     map
   }
 
-  /** returns type node (object) from name
+  /** Returns typedef node (object) from name
     *
     * @param name
     * @param typeNodes
     * @return
     */
   def getTypeNode(name:String, typeNodes:List[TypedefNode]) = {
-    val typeNode = typeNodes find (_.name == name)
+    val typeNode = typeNodes find (_.id == name)
     if (typeNode.isEmpty) throw new RuntimeException(s"No ${name} in types")
     typeNode.get
   }
 
-  /**
-    * Given a range time, returns all the hierarchical history up to the type group.
+  /** Returns all the hierarchical history up to the type group (Range/Encoding/String/Float)
+    * Given a range time
     *
     * ==== Example ====
     * {{{
@@ -68,7 +80,16 @@ trait AssignMapResolver {
     *
     *  input : a => output [a][b][c] as a list of nodes
     * }}}
- *
+    *
+    * ==== Algorithm ===
+    * {{{
+    *   1. get the typeNode from input (goalRangeName == a), and put it in a history
+    *   2. check if goalRangeName is type group (Range/Encoding/String/Float)
+    *   3. If so, stop and return the map
+    *   4. If not, find parent name (b) and check 2
+    *   5. Get the parent names (a, b, c) until the parent name is Range
+    * }}}
+    *
     * @param goalRangeName
     * @param typeNodes
     * @return
@@ -91,25 +112,24 @@ trait AssignMapResolver {
     typeHierarchy.toList
   }
 
-  /** Given goalRangeName, it finds the Range with all the adjusted assignments
+  /** Returns the Range with all the adjusted assignments
+    * Given goalRangeName,
     *
     * ==== example ====
     * {{{
-    * Given
+    *   1. Given
+    *   -type hour extends Range(size=5, min=0, max=23, signed=false)
+    *   -type markethour extends hour(min=10, max=18)
     *
-    *  -type hour extends Range(size=5, min=0, max=23, signed=false)
-    *  -type markethour extends hour(min=10, max=18)
-    *
-    *   The types are stored in `val typeNodes:List[TypeNode]`
-    *
-    *   When input == "makehour"
-    *
-    *   Returns a map of ("name" -> "makehour, "group" -> "Range",
+    *   2. The types are stored in `val typeNodes:List[TypeNode]`
+    *   3. When input == "makehour"
+    *   4. Returns a map of ("name" -> "makehour, "group" -> "Range",
     *                     "size"->"5", "min"->"10", "max=18", "signed=false")
     * }}}
+    *
     * ==== Algorithm ====
     *
-    *  1. Find the history of parents upto one of the four type groups
+    *  1. Find the history of parents up to one of the four type groups
     *     - markethour -> hour -> Range
     *     - hour has Assign expressions
     *  1. In reverse order, fill in the map
@@ -128,7 +148,6 @@ trait AssignMapResolver {
     map ++= getAssignMapFromHistory(history)
     map.toMap
   }
-
   def getAssignMapFromFloatName(floatName:String, typeNodes:List[TypedefNode]) = {
     val map = MMap[String, String]()
     map ++= Map("name" -> floatName, "group" -> "Float")
@@ -137,18 +156,20 @@ trait AssignMapResolver {
     map.toMap
   }
 
-  /**
-    * We support only two cases
+  /** Returns a mp that describes the String's constraints
+    *
+    * We support only the cases
     *
     *   1. function call
     *   1. assignment
-    *   1. range
     *
     * ==== Example ====
     * {{{
-    * +type event extends String(alphanum())
-    * +type name extends String(length < 10)
+    *   +type event extends String(alphanum())
+    *   +type max10 extends String(maxlength(10))
+    *   +type "only a b" extends String(min = 'a', max = 'b')
     * }}}
+    *
     *
     * @param stringName
     * @param typeNodes
@@ -157,39 +178,34 @@ trait AssignMapResolver {
   def getMapFromStringName(stringName:String, typeNodes:List[TypedefNode]) = {
     val map = MMap[String, String]()
     map ++= Map("name" -> stringName, "group" -> "String")
-    // map ++= getAssignMapFromHistory(history)
 
+    // todo: we need more general approach
+    //       we also need some structural/architectural approach for text
+    //       need more documentation
     val typeNode = getTypeNode(stringName, typeNodes)
-//    typeNode.expressions foreach {
-//      expression => {
-//        expression match {
-//          case expression: FunctionNode => {
-//            val function_name = expression.ID
-//            val parameters = expression.params
-//
-//            // alphanum is min/max operation
-//            if (function_name == "alphanum") {
-//              map("type") = "assign"
-//              map("max") = "122" // 'Z'
-//              map("min") = "0" // 'a'
-//            }
-//            else {
-//              map("type") = "function_call"
-//              map("function_name") = function_name
-//              map("value") = parameters(0).asInstanceOf[String]
-//            }
-//          }
-//          case expression:AssignmentNode => {
-//            map("type") = "assign"
-//            val key = expression.ID
-//            val node = expression.node
-//            map(key) = node.value
-//          }
-//        }
-//      }
-//    }
-    // 1. get the string type
+    if (typeNode.function_call != null) {
+      val fname = typeNode.function_call.id
+      if (fname == "alphanum") {
+        map("type") = "assign"
+        map("max") = "122" // 'Z'
+        map("min") = "0" // 'a'
+      }
+      else {
+        map("type") = "function_call"
+        map("function_name") = fname
+        map("value") = typeNode.function_call.constants(0).name
+      }
+    }
+    else if (typeNode.assignments != null) {
+      val assignments = typeNode.assignments
 
+      assignments foreach {
+        assignment =>
+          map("type") = "assign"
+          val key = assignment.id
+          map(key) = assignment.expression.name
+      }
+    }
     map.toMap
   }
 
@@ -213,10 +229,11 @@ trait AssignMapResolver {
       * ==== Example ====
       * {{{
       *  a extend b, b extends c, c extends Range
-      *
-      *  getNodeWhoseParentIsTypeGroup(a) returns [c extends Range] as a typeNode
+      *  getNodeWhoseParentIsTypeGroup(a) returns
+      *   1. the information [c extends Range]
+      *   2. as a typeNode
       * }}}
- *
+      *
       * @param typeNode
       * @return
       */
@@ -227,7 +244,7 @@ trait AssignMapResolver {
       var parentName = typeNode.base_name
       while (!isParentInGroups(parentName)) {
 
-        val result = typeNodes find (_.name == parentName)
+        val result = typeNodes find (_.id == parentName)
         if (result.isDefined) {
           // make an advancement, the parentName should be one of the four to break the loop
           parent = result.get
@@ -240,13 +257,14 @@ trait AssignMapResolver {
     }
 
     // 1. find typeNode that should be in the type nodes (database)
-    val _typeNode = (typeNodes find (_.name == typeNodeName))
+    val _typeNode = (typeNodes find (_.id == typeNodeName))
     if (_typeNode.isEmpty)
       throw new RuntimeException(s"Type ${typeNodeName} is not available")
     val typeNode = _typeNode.get
 
     // 2. get the group node name
-    getNodeWhoseParentIsTypeGroup(typeNode)
+    val res = getNodeWhoseParentIsTypeGroup(typeNode)
+    res
   }
 
   /**
@@ -267,13 +285,16 @@ trait AssignMapResolver {
     * @param typeNodeName
     */
   def getRangeNamesFromEncoding(typeNodeName:String, typeNodes:List[TypedefNode]) = {
-//    val typeGroupNode = getTypeGroupName(typeNodeName, typeNodes)
-//    if (typeGroupNode.base_name != "Encoding")
-//      throw new RuntimeException(s"${typeNodeName} is not in Encoding group, but ${typeGroupNode.base_name}")
-//    val res = typeGroupNode.expressions map {
-//      expression => expression.asInstanceOf[PrimaryExpressionNode].value
-//    }
-//    res.toList
-    null
+    val typeGroupNode = getTypeGroupName(typeNodeName, typeNodes)
+    if (typeGroupNode.base_name != "Encoding")
+      throw new RuntimeException(s"${typeNodeName} is not in Encoding group, but ${typeGroupNode.base_name}")
+    var res = ListBuffer[String]()
+    // return type is typeNode
+    if (typeGroupNode.values.length > 0) {
+      typeGroupNode.values foreach {
+        value => res += value.name
+      }
+    }
+    res.toList
   }
 }

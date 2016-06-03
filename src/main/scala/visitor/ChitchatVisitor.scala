@@ -56,7 +56,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitCommand(ctx: CommandContext) : CommandNode = process(ctx, this)
 
   override def visitAssignment(ctx: AssignmentContext) : AssignmentNode =
-    AssignmentNode(name = ctx.getText(), ID = ctx.ID().getText(),
+    AssignmentNode(name = ctx.getText(), id = ctx.id().getText(),
       expression = visit(ctx.expression()).asInstanceOf[ExpressionNode])
   override def visitComparison(ctx: ComparisonContext) : ComparisonNode = process(ctx, this)
   override def visitFunction_call(ctx:Function_callContext) : Function_callNode = process(ctx, this)

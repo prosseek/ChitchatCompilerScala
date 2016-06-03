@@ -5,13 +5,12 @@ import node.{AssignmentNode, Node, ExpressionsNode, TypedefNode}
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 
 // todo: How to convert the expression into Chitchat type
-//       +type Event extends String(alphanum), +type Name extends String(length < 10)
+//       +type Event extends String(alphanum()), +type Name extends String(length < 10)
 //
-
 class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
 
   private def getTypeNodeFromName(typeNodeName:String) = {
-    val typeNode = typeNodes find (_.name == typeNodeName)
+    val typeNode = typeNodes find (_.id == typeNodeName)
     if (typeNode.isEmpty) throw new RuntimeException(s"No node type ${typeNodeName} found")
     typeNode.get
   }
@@ -19,14 +18,17 @@ class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) ext
   /**
     * Given a map with assignment elements, return a string that interpolates it.
     *
+    * ==== Example ====
+    * {{{
+    *   new Range(name = "y", size = 7, min = -64, max = 63, signed = true)
+    * }}}
+    *
     * @param map
     * @return
     */
   def rangeMapToString(map:Map[String, String]) = {
-    // new Range(name = "y", size = 7, min = -64, max = 63, signed = true)
-
     val range_template =
-      s"""new #{group}(name = "#{name}", size = "#{size}", min = "#{min}", max = "#{max}", signed="#{signed}")""".stripMargin
+      s"""new #{group}(name = "#{name}", size = #{size}, min = #{min}, max = #{max}, signed=#{signed})""".stripMargin
 
     getTemplateString(range_template, map)
   }
@@ -43,13 +45,18 @@ class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) ext
     *   +type "market time" extends time(markethour)
     * }}}
     *
-    *  1. Given "market time" type name: `time -> Encoding(hour, minute)`
+    * ==== Algorithm ====
+    *
+    *  1. From "market time", we know we can use the market hour from time(markethour)
+    *     markethour has superclass hour
+    *  2. From time, we get the encoding `time -> Encoding(hour, minute)`
     *    `hour` & `minute` is returned. So, we know this encoding has two ranges.
-    *  1. From the input parameter, we know the range assignment
-    *     - We start from `markethour` in `+type "market time" extends time(markethour)`
-    *     - from 'markethour' parameter, we know it is range type group (`markethour` -> `hour` -> Range)
-    *     - we already know we need range for `hour` and `minute` from the first step.
-    *  1. We resolve to get assignments for `markethour` which overwrites the setup of `hour` & `minute`
+    *  3. We know that `hour` in step 2 should be replaced by the (markethour -> hour) history in step 1
+    *     So remove the hour
+    *  4. Merge 1 & 2 & 3 to leave only
+    *     1. time (step 2 & 3)
+    *     2. markethour -> hour (step1)
+    *  5. We resolve to get assignments for `markethour` which overwrites the setup of `hour` & `minute`
     *
     * {{{
     *    class Market_time extends Encoding(
@@ -63,45 +70,52 @@ class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) ext
     * @return
     */
   def getContentForEncoding(typeNodeName:String) = {
-//    val typeNode = getTypeNodeFromName(typeNodeName)
-//    val historyList = typeNode.expressions map {
-//      expression => {
-//        // the primary expression node has typeValue and value
-//        // the value has the name of the type
-//        val node = expression.asInstanceOf[PrimaryExpressionNode]
-//        getHistory(node.value, typeNodes)
-//      }
-//    }
-//    // get all of the ranges in the encoding
-//    val rangeNamesWithoutHistory = ListBuffer(getRangeNamesFromEncoding(typeNodeName, typeNodes):_*)
-//    historyList foreach {
-//      history => {
-//        // from historyList we know the range name that has history
-//        // it is removed
-//        rangeNamesWithoutHistory -= history.last.name
-//      }
-//    }
-//    // We have two sets of range
-//    // 1. in rangeNames, the range that does not have history
-//    // 2. in historyList, the range that does have history
-//    // merge them into one historyList
-//    rangeNamesWithoutHistory foreach {
-//      rangeName => {
-//        val typeNode = getTypeNodeFromName(rangeName)
-//        historyList += List[TypedefNode](typeNode)
-//      }
-//    }
-//
-//    val rangeContentStrings = historyList map {
-//      history => {
-//        val map = getAssignMapFromHistory(history)
-//        map("name") = history.last.name
-//        val template = s"""new Range(name = "#{name}", size = #{size}, min = #{min}, max = #{max}, signed = #{signed})"""
-//        getTemplateString(template, map.toMap)
-//      }
-//    }
-//    rangeContentStrings.mkString("Array[Range](", ",", ")")
-    null
+    val typeNode = getTypeNodeFromName(typeNodeName)
+    val historyList = ListBuffer[List[TypedefNode]]()
+
+    /*
+      market time's value => markethour only
+      find all the history of "markethour" => "hour"
+     */
+    if (typeNode.values.length > 0) {
+      typeNode.values foreach (value =>
+        historyList += getHistory(value.name, typeNodes))
+    }
+
+    // get all of the ranges in the encoding
+    // "market time" => (hour, encoding)
+    val rangeNamesWithoutHistory = ListBuffer(getRangeNamesFromEncoding(typeNodeName, typeNodes):_*)
+    historyList foreach {
+      history => {
+        // history = markethour - hour
+        // 2. hour <-- this is removed as last item is the same as hour
+        // 3. minute
+        rangeNamesWithoutHistory -= history.last.id
+      }
+    }
+
+    // hour is removed and minute is left
+    // historyList adds the hour to get these two items in the history
+    // 1. markethour - hour
+    // 2. minute
+    rangeNamesWithoutHistory foreach {
+      rangeName => {
+        val typeNode = getTypeNodeFromName(rangeName)
+        historyList += List[TypedefNode](typeNode)
+      }
+    }
+
+    // we need to fill in the map
+    // the subclass values will override the super class values
+    val rangeContentStrings = historyList map {
+      history => {
+        val map = getAssignMapFromHistory(history)
+        map("name") = history.last.id
+        val template = s"""new Range(name = "#{name}", size = #{size}, min = #{min}, max = #{max}, signed = #{signed})"""
+        getTemplateString(template, map.toMap)
+      }
+    }
+    rangeContentStrings.mkString("Array[Range](", ",", ")")
   }
 
   /**
@@ -137,7 +151,10 @@ class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) ext
   }
 
   /**
-    * class FTest2 extends String (name = "f", conditions = List(97, 'b'))
+    * ==== Example ====
+    * {{{
+    *     class FTest2 extends String (name = "f", conditions = List(97, 'b'))
+    * }}}
     *
     * @param typeNodeName
     * @return

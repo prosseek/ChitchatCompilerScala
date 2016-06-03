@@ -1,8 +1,7 @@
 package codegen
 
-import node.{NodeGenerator, TypedefNode}
+import node._
 import org.scalatest.FunSuite
-import codegen.AssignMapResolver
 
 /*
   +type hello extends Range(min=-10, max=10, size=5, signed=true)
@@ -23,9 +22,9 @@ class TestAssignMapResolver extends FunSuite with AssignMapResolver {
   val types = prognode.typedefs.toList
 
   test("getTypeGroupName test") {
-    assert(getTypeGroupName("time", types).toString() == "TypeNode(time,+,Encoding)")
-    assert(getTypeGroupName("market time", types).toString() == "TypeNode(time,+,Encoding)")
-    assert(getTypeGroupName("markethour", types).toString() == "TypeNode(hour,-,Range)")
+    assert(getTypeGroupName("time", types).toString() == "TypedefNode(+typetimeextendsEncoding(hour,minute),time,+,Encoding)")
+    assert(getTypeGroupName("market time", types).toString() == "TypedefNode(+typetimeextendsEncoding(hour,minute),time,+,Encoding)")
+    assert(getTypeGroupName("markethour", types).toString() == "TypedefNode(-typehourextendsRange(size=5,min=0,max=23,signed=false),hour,-,Range)")
   }
 
   test("getAssignMapFromRangeName test") {
@@ -43,10 +42,13 @@ class TestAssignMapResolver extends FunSuite with AssignMapResolver {
   }
 
   test("get history test") {
-    assert(getHistory("market time", types).toString == "List(TypeNode(market time,+,time), TypeNode(time,+,Encoding))")
+    assert(getHistory("market time", types).toString
+      ==
+      "List(TypedefNode(+type\"market time\"extendstime(markethour),market time,+,time), TypedefNode(+typetimeextendsEncoding(hour,minute),time,+,Encoding))")
   }
 
   test("getRangeNamesFromEncoding test") {
+    //println(getRangeNamesFromEncoding("market time", types))
     assert(getRangeNamesFromEncoding("market time", types) == List("hour", "minute"))
   }
 }

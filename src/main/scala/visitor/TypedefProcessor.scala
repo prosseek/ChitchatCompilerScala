@@ -39,6 +39,7 @@ trait TypedefProcessor {
         if      (node.isInstanceOf[AssignmentNode]) typenode.add(node.asInstanceOf[AssignmentNode])
         else if (node.isInstanceOf[Function_callNode]) typenode.add(node.asInstanceOf[Function_callNode])
         else if (node.isInstanceOf[ValueNode]) typenode.add(node.asInstanceOf[ValueNode])
+        else if (node.isInstanceOf[ComparisonNode]) typenode.add(node.asInstanceOf[ComparisonNode])
         else {
           throw new RuntimeException(s"wrong expression in extended types ${res.getText()}")
         }

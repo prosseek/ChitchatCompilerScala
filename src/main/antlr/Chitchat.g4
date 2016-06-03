@@ -33,10 +33,11 @@ expression: function_call | value | assignment | comparison ;
 params: '(' ( id ','? )* ')' ;
 args: '(' ( constant ','?)* ')' ;
 
-comparison: '(' expression comparison_operator expression ')' ;
+comparison: id comparison_operator expression ;
+
 value: id | constant | list ;
 function_call: id args ;
-assignment: ID '=' expression ;
+assignment: id '=' expression ;
 absolute: '|' expression '-' expression '|' ;
 
 while_loop: WHILE '(' expression ')' block ;
