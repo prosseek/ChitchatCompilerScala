@@ -19,7 +19,7 @@ schema: annotation SCHEMA id '=' '(' expressions ')' ('|' '(' expressions ')' )*
 valuedef: VALUE id '=' block ;
 
 // function
-function: FUNCTION function_call '=' block ;
+function: FUNCTION id params '=' block ;
 
 // command
 command: '{' (expression ';'?)+ '}' ;
@@ -30,10 +30,12 @@ command: '{' (expression ';'?)+ '}' ;
 ids: (id ','?)+;
 expressions: (expression ','?)*;
 expression: function_call | value | assignment | comparison ;
+params: '(' ( id ','? )* ')' ;
+args: '(' ( constant ','?)* ')' ;
 
 comparison: '(' expression comparison_operator expression ')' ;
 value: id | constant | list ;
-function_call: ID '(' expressions ')' ;
+function_call: id args ;
 assignment: ID '=' expression ;
 absolute: '|' expression '-' expression '|' ;
 

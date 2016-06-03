@@ -18,7 +18,8 @@ trait TypedefProcessor {
 
     // create node
     val typenode = TypedefNode(
-      name = ctx.id().getText().replace("\"", ""),
+      name = ctx.getText(),
+      id = ctx.id().getText().replace("\"", ""),
       annotation = annotation,
       base_name = basetype.id().getText().replace("\"", ""))
 

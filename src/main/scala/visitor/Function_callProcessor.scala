@@ -6,12 +6,13 @@ import parser.ChitchatParser.{ExpressionContext, Function_callContext}
 import scala.collection.mutable.ListBuffer
 
 /**
-  * function_call: ID '(' expressions ')' ;
+  * function_call: id args
+  * args: '(' ( constant ','?)* ')' ;
   */
 trait Function_callProcessor {
   def process(ctx:Function_callContext, o:ChitchatVisitor) = {
-    val id = ctx.ID().getText()
-    val params = o.visit(ctx.expressions()).asInstanceOf[ExpressionsNode].expressions
-    Function_callNode(name = ctx.getText(), ID = id, params = params)
+    val id = ctx.id().getText()
+    val constants = o.visit(ctx.args()).asInstanceOf[ArgsNode].constants
+    Function_callNode(name = ctx.getText(), id = id, constants = constants)
   }
 }

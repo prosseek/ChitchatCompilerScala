@@ -17,6 +17,8 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with ComparisonProcessor
   with ValueProcessor
   with ListProcessor
+  with ArgsProcessor
+  with ParamsProcessor
 {
   var prognode: ProgNode = _
 
@@ -66,4 +68,6 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitExpression(ctx: ExpressionContext) : ExpressionNode = process(ctx, this)
   override def visitValue(ctx:ValueContext) : ValueNode = process(ctx, this)
 
+  override def visitParams(ctx:ParamsContext) : ParamsNode = process(ctx, this)
+  override def visitArgs(ctx:ArgsContext) : ArgsNode = process(ctx, this)
 }
