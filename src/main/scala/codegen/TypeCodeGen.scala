@@ -1,6 +1,6 @@
 package codegen
 
-import node.{AssignmentNode, Node, PrimaryExpressionNode, TypedefNode}
+import node.{AssignmentNode, Node, ExpressionsNode, TypedefNode}
 
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 

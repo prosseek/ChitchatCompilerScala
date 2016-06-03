@@ -1,6 +1,6 @@
 package visitor
 
-import node.{ComparisonNode, ExpressionNode, PrimaryExpressionNode}
+import node.{ComparisonNode, ExpressionNode, ExpressionsNode}
 import parser.ChitchatParser.ComparisonContext
 
 /**

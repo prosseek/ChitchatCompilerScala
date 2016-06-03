@@ -28,7 +28,7 @@ command: '{' (expression ';'?)+ '}' ;
 // EXPRESSION
 
 ids: (id ','?)+;
-expressions: (expression ','?)+;
+expressions: (expression ','?)*;
 expression: function_call | value | assignment | comparison ;
 
 comparison: '(' expression comparison_operator expression ')' ;

@@ -4,15 +4,18 @@ case class AssignmentNode(override val name:String, val ID:String, val expressio
 {
   /**
     * Given key, returns a value from the expression
+    *
     * @param key
     */
-  def getValue(key:String) = {
-    if (expression.node.isInstanceOf[ConstantNode]) {
-      val const = expression.node.asInstanceOf[ConstantNode]
+  def getValueInString(key:String) : String = {
+    if (expression.node.isInstanceOf[ValueNode]) {
+      val value = expression.node.asInstanceOf[ValueNode]
+      if (value.node.isInstanceOf[ConstantNode]) {
+        val const = value.node.asInstanceOf[ConstantNode]
+        return const.name
+      }
     }
-    else {
-      throw new RuntimeException(s"When use getValue in assignment node, expression should be constant ${expression.name}")
-    }
+    throw new RuntimeException(s"When use getValue in assignment node, expression should be constant ${expression.name}")
   }
 }
 

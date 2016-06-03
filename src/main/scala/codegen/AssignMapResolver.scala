@@ -1,6 +1,6 @@
 package codegen
 
-import node.{AssignmentNode, FunctionNode, PrimaryExpressionNode, TypedefNode}
+import node.{AssignmentNode, FunctionNode, ExpressionsNode, TypedefNode}
 
 import collection.mutable.{ListBuffer, Map => MMap}
 
@@ -37,8 +37,7 @@ trait AssignMapResolver {
         typeNode.assignments foreach {
           assignment => { // AssignmentNode
             val key = assignment.ID
-            var value = null; // e.node.value
-            map(key) = value
+            map(key) = assignment.getValueInString(key)
           }
         }
       }

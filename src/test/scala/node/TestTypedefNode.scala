@@ -39,7 +39,8 @@ class TestTypedefNode extends FunSuite {
     assert(a.values.size == 0)
 
     val f = a.function_call
-    assert(f.name == "maxlength")
+    assert(f.name == "maxlength(10)")
+    assert(f.ID == "maxlength")
     assert(f.params.size == 1)
   }
 }

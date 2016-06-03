@@ -8,6 +8,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with TypedefProcessor
   with CorrelationProcessor
   with ExpressionProcessor
+  with ExpressionsProcessor
   with SituationProcessor
   with SchemaProcessor
   with FunctionProcessor
@@ -61,6 +62,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())
   override def visitId(ctx:IdContext) : IdNode = IdNode(name = ctx.getText())
 
+  override def visitExpressions(ctx: ExpressionsContext) : ExpressionsNode = process(ctx, this)
   override def visitExpression(ctx: ExpressionContext) : ExpressionNode = process(ctx, this)
   override def visitValue(ctx:ValueContext) : ValueNode = process(ctx, this)
 
