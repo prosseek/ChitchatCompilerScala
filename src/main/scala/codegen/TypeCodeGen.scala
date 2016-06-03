@@ -1,6 +1,6 @@
 package codegen
 
-import node.{AssignNode, Node, PrimaryExpressionNode, TypeNode}
+import node.{AssignmentNode, Node, PrimaryExpressionNode, TypedefNode}
 
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 
@@ -8,7 +8,7 @@ import scala.collection.mutable.{ListBuffer, Map => MMap}
 //       +type Event extends String(alphanum), +type Name extends String(length < 10)
 //
 
-class TypeCodeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends CodeGen with AssignMapResolver {
+class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
 
   private def getTypeNodeFromName(typeNodeName:String) = {
     val typeNode = typeNodes find (_.name == typeNodeName)
@@ -63,44 +63,45 @@ class TypeCodeGen(val typeNode:TypeNode, val typeNodes:List[TypeNode]) extends C
     * @return
     */
   def getContentForEncoding(typeNodeName:String) = {
-    val typeNode = getTypeNodeFromName(typeNodeName)
-    val historyList = typeNode.expressions map {
-      expression => {
-        // the primary expression node has typeValue and value
-        // the value has the name of the type
-        val node = expression.asInstanceOf[PrimaryExpressionNode]
-        getHistory(node.value, typeNodes)
-      }
-    }
-    // get all of the ranges in the encoding
-    val rangeNamesWithoutHistory = ListBuffer(getRangeNamesFromEncoding(typeNodeName, typeNodes):_*)
-    historyList foreach {
-      history => {
-        // from historyList we know the range name that has history
-        // it is removed
-        rangeNamesWithoutHistory -= history.last.name
-      }
-    }
-    // We have two sets of range
-    // 1. in rangeNames, the range that does not have history
-    // 2. in historyList, the range that does have history
-    // merge them into one historyList
-    rangeNamesWithoutHistory foreach {
-      rangeName => {
-        val typeNode = getTypeNodeFromName(rangeName)
-        historyList += List[TypeNode](typeNode)
-      }
-    }
-
-    val rangeContentStrings = historyList map {
-      history => {
-        val map = getAssignMapFromHistory(history)
-        map("name") = history.last.name
-        val template = s"""new Range(name = "#{name}", size = #{size}, min = #{min}, max = #{max}, signed = #{signed})"""
-        getTemplateString(template, map.toMap)
-      }
-    }
-    rangeContentStrings.mkString("Array[Range](", ",", ")")
+//    val typeNode = getTypeNodeFromName(typeNodeName)
+//    val historyList = typeNode.expressions map {
+//      expression => {
+//        // the primary expression node has typeValue and value
+//        // the value has the name of the type
+//        val node = expression.asInstanceOf[PrimaryExpressionNode]
+//        getHistory(node.value, typeNodes)
+//      }
+//    }
+//    // get all of the ranges in the encoding
+//    val rangeNamesWithoutHistory = ListBuffer(getRangeNamesFromEncoding(typeNodeName, typeNodes):_*)
+//    historyList foreach {
+//      history => {
+//        // from historyList we know the range name that has history
+//        // it is removed
+//        rangeNamesWithoutHistory -= history.last.name
+//      }
+//    }
+//    // We have two sets of range
+//    // 1. in rangeNames, the range that does not have history
+//    // 2. in historyList, the range that does have history
+//    // merge them into one historyList
+//    rangeNamesWithoutHistory foreach {
+//      rangeName => {
+//        val typeNode = getTypeNodeFromName(rangeName)
+//        historyList += List[TypedefNode](typeNode)
+//      }
+//    }
+//
+//    val rangeContentStrings = historyList map {
+//      history => {
+//        val map = getAssignMapFromHistory(history)
+//        map("name") = history.last.name
+//        val template = s"""new Range(name = "#{name}", size = #{size}, min = #{min}, max = #{max}, signed = #{signed})"""
+//        getTemplateString(template, map.toMap)
+//      }
+//    }
+//    rangeContentStrings.mkString("Array[Range](", ",", ")")
+    null
   }
 
   /**

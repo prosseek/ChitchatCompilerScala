@@ -1,5 +1,4 @@
 package node
 
-case class ValueNode(override val name:String) extends Node(name = name) {
+case class ValueNode (override val name:String, val node:Node) extends Node(name = name)
 
-}

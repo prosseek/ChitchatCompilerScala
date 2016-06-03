@@ -5,60 +5,32 @@ import parser.ChitchatParser.ExpressionContext
 
 import scala.collection.mutable.ListBuffer
 
-trait ExpressionProcessor {
-  var expression: ExpressionNode = null
-
+trait ExpressionProcessor  {
   /**
     * From the expression grammar create ExpressionNode
     * {{{
-    * expression: comparison | assignment | function_call | primary_expresion;
+    *     expression: function_call | value | assignment | comparison ;
     * }}}
     *
-    * @param ctx
-    * @param o
-    * @return
     */
 
   def process(ctx: ExpressionContext, o:ChitchatVisitor) : ExpressionNode = {
-    /*
+    var result:Node = null
     if (ctx.comparison() != null) {
-      val node = o.visit(ctx.comparison().primary_expresion())
-      expression = ComparisonNode(ID = ctx.comparison().ID().getText(),
-        op = ctx.comparison().comparison_operator().getText(),
-        node = node.asInstanceOf[PrimaryExpressionNode])
+      result = o.visit(ctx.comparison())
     }
     else if (ctx.assignment() != null) {
-      val assignemnt = ctx.assignment()
-      val ID = assignemnt.ID().getText()
-      val pe = assignemnt.primary_expresion()
-      val node = o.visit(pe)
-      expression = AssignNode(ID = ID, node = node.asInstanceOf[PrimaryExpressionNode])
+      result = o.visit(ctx.assignment())
     }
     else if (ctx.function_call() != null) {
-      val function_call = ctx.function_call()
-      val ID = function_call.ID().getText()
-      val pe = function_call.parenparams()
-
-      val params = ListBuffer[Any]()
-
-      if (pe.children != null) {
-        val it = pe.children.iterator()
-
-        while (it.hasNext) {
-          params += it.next().getText()
-        }
-      }
-      expression = FunctionNode(ID = ID, params = params.toSeq)
+      result = o.visit(ctx.function_call())
     }
-    // primary expression requires its own processing
-    else if (ctx.primary_expresion() != null) {
-      expression = o.visit(ctx.primary_expresion()).asInstanceOf[PrimaryExpressionNode]
+    else if (ctx.value() != null) {
+      result = o.visit(ctx.value())
     }
     else {
       throw new RuntimeException(s"Error expression wrong ${ctx.getText()}")
     }
-    expression
-    */
-    null
+    ExpressionNode(name = ctx.getText(), node = result)
   }
 }

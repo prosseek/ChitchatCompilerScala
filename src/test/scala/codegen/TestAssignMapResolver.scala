@@ -1,6 +1,6 @@
 package codegen
 
-import node.{NodeGenerator, TypeNode}
+import node.{NodeGenerator, TypedefNode}
 import org.scalatest.FunSuite
 import codegen.AssignMapResolver
 
@@ -20,7 +20,7 @@ class TestAssignMapResolver extends FunSuite with AssignMapResolver {
 
   // def getTypeGroupName(typeNodeName:String, typeNodes:List[TypeNode])
   val prognode = NodeGenerator.get("./resources/unittest_example/type.txt")
-  val types = prognode.types.toList
+  val types = prognode.typedefs.toList
 
   test("getTypeGroupName test") {
     assert(getTypeGroupName("time", types).toString() == "TypeNode(time,+,Encoding)")

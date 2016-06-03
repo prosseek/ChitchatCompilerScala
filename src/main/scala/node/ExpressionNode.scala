@@ -1,4 +1,4 @@
 package node
 
-abstract class ExpressionNode extends Node(name = "")
+case class ExpressionNode(override val name:String, val node:Node) extends Node(name = "")
 

@@ -6,11 +6,11 @@ import scala.collection.mutable.ListBuffer
 
 // the name of prognode is the script path
 case class ProgNode(override val name:String = "") extends Node(name = name) {
-  val types = ListBuffer[TypeNode]()
+  val typedefs = ListBuffer[TypedefNode]()
   val correlations = ListBuffer[CorrelationNode]()
   val situations = ListBuffer[SituationNode]()
   val schemas = ListBuffer[SchemaNode]()
-  val values = ListBuffer[ValueNode]()
+  val valuedefs = ListBuffer[ValuedefNode]()
   val functions = ListBuffer[FunctionNode]()
   val commands = ListBuffer[CommandNode]()
 
@@ -22,15 +22,22 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
     */
   def add(input:Node) = {
     input match {
-      case TypeNode(name, annotation, base_name) => types += input.asInstanceOf[TypeNode]
+      case TypedefNode(name, annotation, base_name) => typedefs += input.asInstanceOf[TypedefNode]
       case CorrelationNode(name) =>                 correlations += input.asInstanceOf[CorrelationNode]
       case SituationNode(name) =>                   situations += input.asInstanceOf[SituationNode]
       case SchemaNode(name) =>                      schemas += input.asInstanceOf[SchemaNode]
-      case ValueNode(name) =>                       values += input.asInstanceOf[ValueNode]
+      case ValuedefNode(name) =>                    valuedefs += input.asInstanceOf[ValuedefNode]
       case FunctionNode(name, params) =>            functions += input.asInstanceOf[FunctionNode]
       case CommandNode(name) =>                     commands += input.asInstanceOf[CommandNode]
       case _ => throw new RuntimeException(s"wrong node type")
     }
+  }
+
+  def getTypedefNode(name:String) : Option[TypedefNode] = {
+    val result = typedefs filter (_.name == name)
+    if (result.size == 0) return None
+    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
+    Some(result(0))
   }
 
   /**

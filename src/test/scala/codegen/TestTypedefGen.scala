@@ -4,10 +4,10 @@ import node.NodeGenerator
 import org.scalatest.FunSuite
 import codegen.TypeCodeGen
 
-class TestTypeGen extends FunSuite
+class TestTypedefGen extends FunSuite
 {
   val prognode = NodeGenerator.get("./resources/unittest_example/type.txt")
-  val types = prognode.types.toList
+  val types = prognode.typedefs.toList
 
   test ("find range test") {
     /*

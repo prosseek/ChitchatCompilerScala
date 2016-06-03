@@ -1,6 +1,6 @@
 package codegen
 
-import node.{AssignNode, FunctionNode, PrimaryExpressionNode, TypeNode}
+import node.{AssignmentNode, FunctionNode, PrimaryExpressionNode, TypedefNode}
 
 import collection.mutable.{ListBuffer, Map => MMap}
 
@@ -14,6 +14,13 @@ trait AssignMapResolver {
   /**
     * Given a history of typenodes (the later the higher in hierarchy, superclass)
     *
+    * === typedefNode ===
+    * {{{
+    * val assignments = ListBuffer[AssignmentNode]()
+    * var function_call:Function_callNode = null
+    * var values = ListBuffer[ValueNode]()
+    * }}}
+    *
     * ==== Example ====
     * {{{
     *  when a(x = 10, y = 20) -> b(x = 20) -> c (z = 30) when a < b < c
@@ -23,15 +30,14 @@ trait AssignMapResolver {
     * @param history
     * @return
     */
-  def getAssignMapFromHistory(history:List[TypeNode]) = {
+  def getAssignMapFromHistory(history:List[TypedefNode]) = {
     val map = MMap[String, String]()
     history.reverse foreach {
       typeNode => {
-        typeNode.expressions foreach {
-          expression => {
-            val e = expression.asInstanceOf[AssignNode]
-            val key = e.ID
-            var value = e.node.value
+        typeNode.assignments foreach {
+          assignment => { // AssignmentNode
+            val key = assignment.ID
+            var value = null; // e.node.value
             map(key) = value
           }
         }
@@ -46,7 +52,7 @@ trait AssignMapResolver {
     * @param typeNodes
     * @return
     */
-  def getTypeNode(name:String, typeNodes:List[TypeNode]) = {
+  def getTypeNode(name:String, typeNodes:List[TypedefNode]) = {
     val typeNode = typeNodes find (_.name == name)
     if (typeNode.isEmpty) throw new RuntimeException(s"No ${name} in types")
     typeNode.get
@@ -68,8 +74,8 @@ trait AssignMapResolver {
     * @param typeNodes
     * @return
     */
-  def getHistory(goalRangeName:String, typeNodes:List[TypeNode]) = {
-    val typeHierarchy = ListBuffer[TypeNode]()
+  def getHistory(goalRangeName:String, typeNodes:List[TypedefNode]) = {
+    val typeHierarchy = ListBuffer[TypedefNode]()
 
     // 1. check if the goalRangeName is in the type database
     //    set current node into the hierarchy
@@ -116,7 +122,7 @@ trait AssignMapResolver {
     *  1. It uses `getHistory` to get all the type nodes from the input to the node whose paresnt is Group Node
     *  1. It uses `getAssignMapFromHistory` to build assignment map from retrieved history of TypeNodes.
     */
-  def getAssignMapFromRangeName(rangeName:String, typeNodes:List[TypeNode]) = {
+  def getAssignMapFromRangeName(rangeName:String, typeNodes:List[TypedefNode]) = {
     val map = MMap[String, String]()
     map ++= Map("name" -> rangeName, "group" -> "Range")
     val history = getHistory(rangeName, typeNodes)
@@ -124,7 +130,7 @@ trait AssignMapResolver {
     map.toMap
   }
 
-  def getAssignMapFromFloatName(floatName:String, typeNodes:List[TypeNode]) = {
+  def getAssignMapFromFloatName(floatName:String, typeNodes:List[TypedefNode]) = {
     val map = MMap[String, String]()
     map ++= Map("name" -> floatName, "group" -> "Float")
     val history = getHistory(floatName, typeNodes)
@@ -149,40 +155,40 @@ trait AssignMapResolver {
     * @param typeNodes
     * @return
     */
-  def getMapFromStringName(stringName:String, typeNodes:List[TypeNode]) = {
+  def getMapFromStringName(stringName:String, typeNodes:List[TypedefNode]) = {
     val map = MMap[String, String]()
     map ++= Map("name" -> stringName, "group" -> "String")
     // map ++= getAssignMapFromHistory(history)
 
     val typeNode = getTypeNode(stringName, typeNodes)
-    typeNode.expressions foreach {
-      expression => {
-        expression match {
-          case expression: FunctionNode => {
-            val function_name = expression.ID
-            val parameters = expression.params
-
-            // alphanum is min/max operation
-            if (function_name == "alphanum") {
-              map("type") = "assign"
-              map("max") = "122" // 'Z'
-              map("min") = "0" // 'a'
-            }
-            else {
-              map("type") = "function_call"
-              map("function_name") = function_name
-              map("value") = parameters(0).asInstanceOf[String]
-            }
-          }
-          case expression:AssignNode => {
-            map("type") = "assign"
-            val key = expression.ID
-            val node = expression.node
-            map(key) = node.value
-          }
-        }
-      }
-    }
+//    typeNode.expressions foreach {
+//      expression => {
+//        expression match {
+//          case expression: FunctionNode => {
+//            val function_name = expression.ID
+//            val parameters = expression.params
+//
+//            // alphanum is min/max operation
+//            if (function_name == "alphanum") {
+//              map("type") = "assign"
+//              map("max") = "122" // 'Z'
+//              map("min") = "0" // 'a'
+//            }
+//            else {
+//              map("type") = "function_call"
+//              map("function_name") = function_name
+//              map("value") = parameters(0).asInstanceOf[String]
+//            }
+//          }
+//          case expression:AssignmentNode => {
+//            map("type") = "assign"
+//            val key = expression.ID
+//            val node = expression.node
+//            map(key) = node.value
+//          }
+//        }
+//      }
+//    }
     // 1. get the string type
 
     map.toMap
@@ -200,7 +206,7 @@ trait AssignMapResolver {
     *
     * @return
     */
-  def getTypeGroupName(typeNodeName:String, typeNodes:List[TypeNode]) = {
+  def getTypeGroupName(typeNodeName:String, typeNodes:List[TypedefNode]) = {
     /**
       * Given typeNode (as name, not node), finds the ultimate (the node whose parent is one of the four groups)
       * node (not name)
@@ -215,7 +221,7 @@ trait AssignMapResolver {
       * @param typeNode
       * @return
       */
-    def getNodeWhoseParentIsTypeGroup(typeNode:TypeNode) : TypeNode = {
+    def getNodeWhoseParentIsTypeGroup(typeNode:TypedefNode) : TypedefNode = {
       var parent = typeNode
 
       // make an advancement to test
@@ -261,13 +267,14 @@ trait AssignMapResolver {
     *
     * @param typeNodeName
     */
-  def getRangeNamesFromEncoding(typeNodeName:String, typeNodes:List[TypeNode]) = {
-    val typeGroupNode = getTypeGroupName(typeNodeName, typeNodes)
-    if (typeGroupNode.base_name != "Encoding")
-      throw new RuntimeException(s"${typeNodeName} is not in Encoding group, but ${typeGroupNode.base_name}")
-    val res = typeGroupNode.expressions map {
-      expression => expression.asInstanceOf[PrimaryExpressionNode].value
-    }
-    res.toList
+  def getRangeNamesFromEncoding(typeNodeName:String, typeNodes:List[TypedefNode]) = {
+//    val typeGroupNode = getTypeGroupName(typeNodeName, typeNodes)
+//    if (typeGroupNode.base_name != "Encoding")
+//      throw new RuntimeException(s"${typeNodeName} is not in Encoding group, but ${typeGroupNode.base_name}")
+//    val res = typeGroupNode.expressions map {
+//      expression => expression.asInstanceOf[PrimaryExpressionNode].value
+//    }
+//    res.toList
+    null
   }
 }

@@ -1,4 +1,8 @@
 package node
 
-case class ComparisonNode(val ID:String, val op:String, val node:PrimaryExpressionNode) extends ExpressionNode
+case class ComparisonNode(
+                          override val name:String,
+                          val op:String,
+                          val expression1:ExpressionNode,
+                          val expression2:ExpressionNode) extends Node(name = name)
 

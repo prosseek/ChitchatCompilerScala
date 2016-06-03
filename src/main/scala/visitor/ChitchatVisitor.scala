@@ -12,6 +12,10 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with SchemaProcessor
   with FunctionProcessor
   with CommandProcessor
+  with Function_callProcessor
+  with ComparisonProcessor
+  with ValueProcessor
+  with ListProcessor
 {
   var prognode: ProgNode = _
 
@@ -41,12 +45,23 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   }
 
   // prog's children visitors
-  override def visitTypedef(ctx: TypedefContext) : TypeNode = process(ctx, this)
+  override def visitTypedef(ctx: TypedefContext) : TypedefNode = process(ctx, this)
   override def visitCorrelation(ctx: CorrelationContext) : CorrelationNode = process(ctx, this)
   override def visitSituation(ctx: SituationContext) : SituationNode = process(ctx, this)
   override def visitSchema(ctx: SchemaContext) : SchemaNode = process(ctx, this)
   override def visitFunction(ctx: FunctionContext) : FunctionNode = process(ctx, this)
   override def visitCommand(ctx: CommandContext) : CommandNode = process(ctx, this)
 
+  override def visitAssignment(ctx: AssignmentContext) : AssignmentNode =
+    AssignmentNode(name = ctx.getText(), ID = ctx.ID().getText(),
+      expression = visit(ctx.expression()).asInstanceOf[ExpressionNode])
+  override def visitComparison(ctx: ComparisonContext) : ComparisonNode = process(ctx, this)
+  override def visitFunction_call(ctx:Function_callContext) : Function_callNode = process(ctx, this)
+  override def visitList(ctx:ListContext) : ListNode = process(ctx, this)
+  override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())
+  override def visitId(ctx:IdContext) : IdNode = IdNode(name = ctx.getText())
+
   override def visitExpression(ctx: ExpressionContext) : ExpressionNode = process(ctx, this)
+  override def visitValue(ctx:ValueContext) : ValueNode = process(ctx, this)
+
 }
