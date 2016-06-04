@@ -1,5 +1,16 @@
 package codegen
 
-class SchemaCodeGen extends CodeGen {
+import node._
 
+class SchemaCodeGen(val schemaNode:CorrelationNode = null,
+                  val schemaNodes:List[SchemaNode]) extends CodeGen {
+
+  def gen(schemaName:String) = {}
+
+  def generate() = {
+    if (schemaNode != null)
+      gen(schemaNode.id)
+    else
+      throw new RuntimeException(s"No typedefNode defined")
+  }
 }

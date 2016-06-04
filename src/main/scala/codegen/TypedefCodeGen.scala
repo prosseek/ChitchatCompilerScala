@@ -4,10 +4,7 @@ import node.{AssignmentNode, Node, ExpressionsNode, TypedefNode}
 
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 
-// todo: How to convert the expression into Chitchat type
-//       +type Event extends String(alphanum()), +type Name extends String(length < 10)
-//
-class TypedefCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
+class TypedefCodeGen(val typedefNode:TypedefNode = null, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
 
   private def getTypeNodeFromName(typeNodeName:String) = {
     val typeNode = typeNodes find (_.id == typeNodeName)
@@ -220,5 +217,12 @@ class TypedefCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) 
       "name" -> typeNodeName,
       "contents" -> contentString)
     getTemplateString(plugin_template, map)
+  }
+
+  def generate() = {
+    if (typedefNode != null)
+      gen(typedefNode.id)
+    else
+      throw new RuntimeException(s"No typedefNode defined")
   }
 }
