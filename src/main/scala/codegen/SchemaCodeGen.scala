@@ -9,7 +9,7 @@ class SchemaCodeGen(val schemaNode:CorrelationNode = null,
 
   def generate() = {
     if (schemaNode != null)
-      gen(schemaNode.id)
+      gen(schemaNode.id).toString
     else
       throw new RuntimeException(s"No typedefNode defined")
   }

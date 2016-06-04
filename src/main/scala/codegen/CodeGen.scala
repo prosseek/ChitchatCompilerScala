@@ -11,5 +11,5 @@ abstract class CodeGen {
     name.replace("\"","").capitalize.replace(" ", "_")
   }
 
-  def generate()
+  def generate() : String
 }

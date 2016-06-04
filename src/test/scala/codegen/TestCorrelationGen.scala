@@ -15,6 +15,9 @@ class TestCorrelationGen extends FunSuite
 //    val a = prognode.getCorrelationNode("a").get
 //    assert(a.name == "a")
 //    println(a.get(cs))
-    val cg = new CorrelationCodeGen(correlationNode = cs)
+    val c = prognode.getCorrelationNode("bookseller").get
+    val cg = new CorrelationCodeGen(correlationNode = c, correlationNodes = cs.toList)
+
+    println(cg.generate())
   }
 }

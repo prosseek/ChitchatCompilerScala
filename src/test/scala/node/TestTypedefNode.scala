@@ -66,9 +66,10 @@ class TestTypedefNode extends FunSuite {
     assert(a.assignments.size == 0)
     assert(a.values.size == 0)
 
+    // length < 10
     val f = a.comparison
-    assert(f.id.name == "length")
+    assert(f.expression1.name == "length")
     assert(f.op == "<")
-    assert(f.expression.name == "10")
+    assert(f.expression2.name == "10")
   }
 }

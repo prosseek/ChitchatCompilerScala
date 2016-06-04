@@ -14,7 +14,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with FunctionProcessor
   with CommandProcessor
   with Function_callProcessor
-  with ComparisonProcessor
+  //with ComparisonProcessor
   with ValueProcessor
   with ListProcessor
   with ArgsProcessor
@@ -58,7 +58,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitAssignment(ctx: AssignmentContext) : AssignmentNode =
     AssignmentNode(name = ctx.getText(), id = ctx.id().getText(),
       expression = visit(ctx.expression()).asInstanceOf[ExpressionNode])
-  override def visitComparison(ctx: ComparisonContext) : ComparisonNode = process(ctx, this)
+  //override def visitComparison(ctx: ComparisonContext) : ComparisonNode = process(ctx, this)
   override def visitFunction_call(ctx:Function_callContext) : Function_callNode = process(ctx, this)
   override def visitList(ctx:ListContext) : ListNode = process(ctx, this)
   override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())

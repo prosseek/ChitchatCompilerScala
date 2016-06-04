@@ -29,11 +29,16 @@ command: '{' (expression ';'?)+ '}' ;
 
 ids: (id ','?)+;
 expressions: (expression ','?)*;
-expression: function_call | value | assignment | comparison ;
+// due to mutual recursion, logic and comparion 
+// is in this form not comparsion: expression ... form.
+// the processor generates a Comparison/Logic node from the expression
+expression: function_call | value | assignment
+          | '(' expression ')'
+          | expression comparison_operator expression  // comparsion
+          | expression logic_operator expression ;     // logic
+
 params: '(' ( id ','? )* ')' ;
 args: '(' ( constant ','?)* ')' ;
-
-comparison: id comparison_operator expression ;
 
 value: id | constant | list ;
 function_call: id args ;
@@ -50,6 +55,7 @@ block: '{' expressions '}';
 id: ID | STRING;
 annotation: ('+'|'-');
 comparison_operator: '<'|'>'|'<='|'>=';
+logic_operator: '&&' | '||' ;
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
 unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
 unit_value: constant (unit)?;

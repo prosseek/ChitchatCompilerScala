@@ -16,8 +16,26 @@ trait ExpressionProcessor  {
 
   def process(ctx: ExpressionContext, o:ChitchatVisitor) : ExpressionNode = {
     var result:Node = null
-    if (ctx.comparison() != null) {
-      result = o.visit(ctx.comparison())
+
+    if (ctx.getText().startsWith("(")) {
+      result = o.visit(ctx.expression(0)).asInstanceOf[ExpressionNode]
+    }
+    else if (ctx.expression().size != 0) {
+      val e1 = ctx.expression(0)
+      val e2 = ctx.expression(1)
+
+      if (ctx.comparison_operator() != null) {
+        result = ComparisonNode(name=ctx.getText(),
+          op = ctx.comparison_operator().getText(),
+          expression1 = o.visit(e1).asInstanceOf[ExpressionNode],
+          expression2 = o.visit(e2).asInstanceOf[ExpressionNode])
+      }
+      if (ctx.logic_operator() != null) {
+        result = LogicNode(name=ctx.getText(),
+          op = ctx.logic_operator().getText(),
+          expression1 = o.visit(e1).asInstanceOf[ExpressionNode],
+          expression2 = o.visit(e2).asInstanceOf[ExpressionNode])
+      }
     }
     else if (ctx.assignment() != null) {
       result = o.visit(ctx.assignment())
