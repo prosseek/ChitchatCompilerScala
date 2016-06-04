@@ -1,3 +1,2 @@
-correlation a = (s, z, (h, p, u))
-correlation z = (p, q, (r, s))
-correlation s = (k, l)
+correlation location = (latitude, longitude)
+correlation bookseller = (name, location)

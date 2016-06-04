@@ -1,24 +1,35 @@
 package visitor
 
-import node.CorrelationNode
-import org.antlr.v4.runtime.ParserRuleContext
-import parser.ChitchatParser
+import node._
 import parser.ChitchatParser.CorrelationContext
 
 /**
   * ==== Grammar ====
   * // correlation
   * {{{
-  *   correlation: CORRELATION id '=' (grouping | from_group_name) ;
-  *   from_group_name: 'schema.'  id ;
-  *   grouping: '(' group_ids ')' ;
-  *   group_ids: ((ID | STRING | grouping) ','?)+ ;
+  *     correlation: CORRELATION id '=' '(' expressions ')' ;
+  *     value: id | constant | list ; (only id is used)
+  *     function: FUNCTION id params '=' block ;
   * }}}
   *
   */
 trait CorrelationProcessor {
   def process(ctx: CorrelationContext, o:ChitchatVisitor) : CorrelationNode = {
-    val cornode = CorrelationNode(name = ctx.id().getText())
-    cornode
+    val c = CorrelationNode(name = ctx.getText(), id = ctx.id().getText())
+    val expressions = o.visit(ctx.expressions).asInstanceOf[ExpressionsNode].expressions
+
+    expressions foreach { expression =>
+      val n = expression.node
+      if(n.isInstanceOf[ValueNode]) {
+        val vnode = n.asInstanceOf[ValueNode]
+        c.add(vnode)
+      }
+      else if (n.isInstanceOf[Function_callNode]) {
+        val fcallNode = n.asInstanceOf[Function_callNode]
+        c.add(fcallNode)
+      }
+    }
+
+    c
   }
 }

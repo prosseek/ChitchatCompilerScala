@@ -7,7 +7,7 @@ import scala.collection.mutable.{ListBuffer, Map => MMap}
 // todo: How to convert the expression into Chitchat type
 //       +type Event extends String(alphanum()), +type Name extends String(length < 10)
 //
-class TypeCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
+class TypedefCodeGen(val typeNode:TypedefNode, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
 
   private def getTypeNodeFromName(typeNodeName:String) = {
     val typeNode = typeNodes find (_.id == typeNodeName)

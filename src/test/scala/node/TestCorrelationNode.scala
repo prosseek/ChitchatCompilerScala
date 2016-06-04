@@ -2,19 +2,38 @@ package node
 
 import org.scalatest.FunSuite
 
+
+
 class TestCorrelationNode extends FunSuite {
 //  val prognode = NodeGenerator.get("./resources/unittest_example/correlation_simple.txt")
 
   /**
-    * correlation a = (s, z, (h, p, u))
-    * correlation z = (p, q, (r, s))
-    * correlation s = (k, l)
+    *
+  === Input ===
+  # correlation location = (latitude, longitude)
+  # correlation bookseller = (name, location)
+
+  === Output ===
+    allexists latitude longitude
+    stop
+
+    allexists name latitude longitude
+    stop
     */
   test ("simple") {
-//    val a = prognode.getCorrelationNode("a").get
-//    assert(a.name == "a")
-//    assert(a.elements.mkString == "suphz")
-//
-//    assert(prognode.getCorrelationTypeNames("a").get.toString == "Set(u, q, l, p, h, r, k)")
+    val prognode = NodeGenerator.get("./resources/unittest_example/correlation_simple.txt")
+    val bs = prognode.getCorrelationNode("bookseller").get
+    val loc = prognode.getCorrelationNode("location").get
+    assert(bs.id == "bookseller")
+    assert(loc.id == "location")
+    assert(bs.function_call == null)
+    assert(loc.function_call == null)
+
+    assert(bs.values.length == 2)
+    assert(bs.values.length == 2)
+
+    assert(bs.get(prognode.correlations.toList).toString == "List(name, latitude, longitude)")
+    val res = loc.get(prognode.correlations.toList)
+    assert(res.toString == "List(latitude, longitude)")
   }
 }

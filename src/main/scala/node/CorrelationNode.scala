@@ -2,62 +2,54 @@ package node
 
 import scala.collection.mutable.{ListBuffer, Set => MSet}
 
-case class CorrelationNode(override val name:String) extends Node(name = name) {
-  val elements = ListBuffer[String]()
+case class CorrelationNode(override val name:String, val id:String) extends Node(name = name) {
+  var function_call:Function_callNode = null
+  var values = ListBuffer[ValueNode]()
 
-  /** Stores the type names. A progname node has multiple correlation nodes.
+  /**
+    * Update the values
     *
-    * @param typeNames
+    * @param value
     * @return
     */
-  def add(typeNames:List[String]) = {
-    elements ++= typeNames
+  def add(value:ValueNode) = {
+    values += value
+  }
+  def add(fc:Function_callNode) = {
+    function_call = fc
   }
 
   /** Returns all the name of the fully resolved correlated names.
     *
     * ==== Example ====
     * {{{
-    *   correlation a = (s, z, (h, p, u))
-    *   correlation z = (p, q, (r, s))
+    *   correlation a = (s, z)
+    *   correlation z = (p, q)
     *   correlation s = (k, l)
     *
-    *   a.get([a,z,s]) => (k, l, p, q, r, s, h, p, u)
+    *   a.get([a,z,s]) => (p, q, k, l)
+    * }}}
+    *
+    * ==== Idea ====
+    * {{{
+    *   Building a tree will tell you what is a node and what is a leaf
+    *
+    *    a
+    *   |  \
+    *   s   z
+    *   |\   |\
+    *   k l  p q
     * }}}
     *
     * ==== Algorithm ====
-    *  1. given name, put all the elements.
-    *     `(s, z, h, p, u)`
-    *  1. iterate
-    *     1. if name is in the set, replace
-    *        `(k, l, z, h, p, u)`
-    *     1. iterate from the start
-    *  1. when all elements are type, not correlation, stops
+    *  1. From input correlationNames create a tree
+    *  2. Given a name (a), find all the leaves
     *
+    * @param correlationNodes
+    * @return a set of name strings
     */
-  def get(correlationNodes:ListBuffer[CorrelationNode]) : Set[String] = {
-    val correlationNames = (correlationNodes map { node => node.name}).toSet
-    def correlationInSet(name:String) = correlationNames.contains(name)
-    def noCorrelationInSet(names:Set[String]) = names.filter(correlationInSet(_)).size == 0
-
-    var result = MSet[String]()
-    result ++= elements.toSet
-
-    // 1. put all the elements
-    while(!noCorrelationInSet(result.toSet)) {
-      val temp = MSet[String]()
-      result foreach { value =>
-        if (correlationInSet(value)) {
-          val theNode = correlationNodes.filter(_.name == value)
-          if (theNode.size != 1) throw new RuntimeException(s"there are multiple ${value}")
-          temp ++= theNode(0).get(correlationNodes)
-        }
-        else {
-          temp += value
-        }
-      }
-      result = temp
-    }
-  result.toSet
+  def get(correlationNodes:List[CorrelationNode]) : List[String] = {
+    util.Tree(correlationNodes).get(this.id)
   }
 }
+
