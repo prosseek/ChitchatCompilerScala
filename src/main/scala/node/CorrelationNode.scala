@@ -2,7 +2,7 @@ package node
 
 import scala.collection.mutable.{ListBuffer, Set => MSet}
 
-case class CorrelationNode(override val name:String, val id:String) extends Node(name = name) {
+case class CorrelationNode(override val name:String, override val id:String) extends Node(name = name, id = id) {
   var function_call:Function_callNode = null
   var values = ListBuffer[ValueNode]()
 

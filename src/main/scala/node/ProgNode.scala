@@ -24,30 +24,44 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
     input match {
       case TypedefNode(name, id, annotation, base_name) => typedefs += input.asInstanceOf[TypedefNode]
       case CorrelationNode(name, id) =>                    correlations += input.asInstanceOf[CorrelationNode]
-      case SituationNode(name, id) =>                          situations += input.asInstanceOf[SituationNode]
-      case SchemaNode(name) =>                             schemas += input.asInstanceOf[SchemaNode]
+      case SituationNode(name, id) =>                      situations += input.asInstanceOf[SituationNode]
+      case SchemaNode(name, id) =>                         schemas += input.asInstanceOf[SchemaNode]
       case ValuedefNode(name) =>                           valuedefs += input.asInstanceOf[ValuedefNode]
-      case FunctionNode(name, id, params, block) =>        functions += input.asInstanceOf[FunctionNode]
+      case FunctionNode(name, return_type, id, params, block) =>        functions += input.asInstanceOf[FunctionNode]
       case CommandNode(name) =>                            commands += input.asInstanceOf[CommandNode]
       case _ => throw new RuntimeException(s"wrong node type")
     }
   }
 
-  def getTypedefNode(name:String) : Option[TypedefNode] = {
-    val result = typedefs filter (_.id == name)
-    if (result.size == 0) return None
-    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
-    Some(result(0))
-  }
+//  def getTypedefNode(name:String) : Option[TypedefNode] = {
+//    val result = typedefs filter (_.id == name)
+//    if (result.size == 0) return None
+//    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
+//    Some(result(0))
+//  }
+//
+//  /**
+//    * Returns correlation node from name
+//    *
+//    * @param name
+//    * @return
+//    */
+//  def getCorrelationNode(name:String) : Option[CorrelationNode] = {
+//    val result = correlations filter (_.id == name)
+//    if (result.size == 0) return None
+//    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
+//    Some(result(0))
+//  }
+//
+//  def getFunctionNode(name:String) : Option[FunctionNode] = {
+//    val result = functions filter (_.id == name)
+//    if (result.size == 0) return None
+//    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
+//    Some(result(0))
+//  }
 
-  /**
-    * Returns correlation node from name
-    *
-    * @param name
-    * @return
-    */
-  def getCorrelationNode(name:String) : Option[CorrelationNode] = {
-    val result = correlations filter (_.id == name)
+  def getNode[T <: Node](name:String, nodes:ListBuffer[T]) : Option[T] = {
+    val result = nodes filter (_.id == name)
     if (result.size == 0) return None
     if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
     Some(result(0))

@@ -1,6 +1,8 @@
 package node
 
-case class AssignmentNode(override val name:String, val id:String, val expression:ExpressionNode) extends Node(name = name)
+case class AssignmentNode(override val name:String,
+                          override val id:String,
+                          val expression:ExpressionNode) extends Node(name = name, id = id)
 {
   /**
     * Given key, returns a value from the expression

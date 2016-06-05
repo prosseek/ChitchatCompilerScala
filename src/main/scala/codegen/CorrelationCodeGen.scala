@@ -69,17 +69,25 @@ import node.CorrelationNode
 class CorrelationCodeGen(val correlationNode:CorrelationNode, val correlationNodes:List[CorrelationNode])  extends CodeGen {
 
   def generate_for_simple(values:List[String]) = {
-    values.mkString("[","*","]")
+    val res = new StringBuilder
+    res ++= values.mkString("allexists ", " ", "\n")
+    res ++= "stop\n"
+    res.toString
+  }
+
+  def generate_for_function() = {
+
   }
 
   def generate() : String = {
     if (correlationNode != null) {
-      val info = correlationNode.get(correlationNodes)
-
       if (correlationNode.function_call == null) {
+        val info = correlationNode.get(correlationNodes)
         return generate_for_simple(info)
       }
-      ""
+      else {
+        ""
+      }
     }
     else
       throw new RuntimeException(s"No correlationNode defined")

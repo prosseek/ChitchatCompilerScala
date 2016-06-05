@@ -14,7 +14,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with FunctionProcessor
   with CommandProcessor
   with Function_callProcessor
-  //with ComparisonProcessor
+  with BlockProcessor
   with ValueProcessor
   with ListProcessor
   with ArgsProcessor
@@ -70,4 +70,6 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
 
   override def visitParams(ctx:ParamsContext) : ParamsNode = process(ctx, this)
   override def visitArgs(ctx:ArgsContext) : ArgsNode = process(ctx, this)
+
+  override def visitBlock(ctx:BlockContext) : BlockNode = process(ctx, this)
 }

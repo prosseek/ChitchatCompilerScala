@@ -19,13 +19,15 @@ schema: annotation SCHEMA id '=' '(' expressions ')' ('|' '(' expressions ')' )*
 valuedef: VALUE id '=' block ;
 
 // function
-function: FUNCTION id params '=' block ;
+function: FUNCTION return_type id params '=' block ;
 
 // command
 command: '{' (expression ';'?)+ '}' ;
 
 ///////////////////////////////////////
 // EXPRESSION
+
+return_type: 'int' | 'bool' ;
 
 ids: (id ','?)+;
 expressions: (expression ','?)*;
@@ -54,7 +56,7 @@ block: '{' expressions '}';
 
 id: ID | STRING;
 annotation: ('+'|'-');
-comparison_operator: '<'|'>'|'<='|'>=';
+comparison_operator: '<'|'>'|'<='|'>=' | '==' ;
 logic_operator: '&&' | '||' ;
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
 unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;

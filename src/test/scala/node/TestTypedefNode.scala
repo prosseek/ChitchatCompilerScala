@@ -9,7 +9,7 @@ class TestTypedefNode extends FunSuite {
     */
   test("simple") {
     val prognode = NodeGenerator.get("./resources/unittest_example/type_simple.txt")
-    val a = prognode.getTypedefNode("hello").get
+    val a = prognode.getNode[TypedefNode]("hello", prognode.typedefs).get
     assert(a.name == "+typehelloextendsRange(min=-10,max=10,size=5,signed=true)")
     assert(a.id == "hello")
     assert(a.assignments.size == 4)
@@ -29,7 +29,7 @@ class TestTypedefNode extends FunSuite {
     */
   test("simple2") {
     val prognode = NodeGenerator.get("./resources/unittest_example/type_simple2.txt")
-    val a = prognode.getTypedefNode("time").get
+    val a = prognode.getNode[TypedefNode]("time", prognode.typedefs).get
     assert(a.id == "time")
     assert(a.assignments.size == 0)
     assert(a.values.size == 2)
@@ -43,7 +43,8 @@ class TestTypedefNode extends FunSuite {
     */
   test("simple3") {
     val prognode = NodeGenerator.get("./resources/unittest_example/type_simple3.txt")
-    val a = prognode.getTypedefNode("max10").get
+    val a = prognode.getNode[TypedefNode]("max10", prognode.typedefs).get
+
     assert(a.name == "+typemax10extendsString(maxlength(10))")
     assert(a.id == "max10")
     assert(a.assignments.size == 0)
@@ -61,7 +62,7 @@ class TestTypedefNode extends FunSuite {
     */
   test("simple4") {
     val prognode = NodeGenerator.get("./resources/unittest_example/type_simple4.txt")
-    val a = prognode.getTypedefNode("name").get
+    val a = prognode.getNode[TypedefNode]("name", prognode.typedefs).get
     assert(a.id == "name")
     assert(a.assignments.size == 0)
     assert(a.values.size == 0)
