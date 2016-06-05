@@ -7,5 +7,5 @@
 +type event extends String(alphanum())
 +type max10 extends String(maxlength(10))
 +type "only a b" extends String(min = 'a', max = 'b')
--type markethour extends hour(min=10, max=18)
++type markethour extends hour(min=10, max=18)
 +type "market time" extends time(markethour)

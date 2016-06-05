@@ -1,6 +1,7 @@
 package node
 
 import scala.collection.mutable.ListBuffer
+import node.codegen._
 
 /*
  * typedef: annotation TYPE id EXT  base_type ;
@@ -26,5 +27,10 @@ case class TypedefNode(override val name:String, override val id:String, val ann
   }
   def add(comparisonNode: ComparisonNode) = {
     comparison = comparisonNode
+  }
+
+  def codeGen(progNode:ProgNode) :String = {
+    val cg = new TypedefCodeGen(typedefNode = this, progNode = progNode)
+    cg.generate()
   }
 }

@@ -1,11 +1,12 @@
-package codegen
+package node.codegen
 
-import node.{AssignmentNode, Node, ExpressionsNode, TypedefNode}
+import node._
 
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 
-class TypedefCodeGen(val typedefNode:TypedefNode = null, val typeNodes:List[TypedefNode]) extends CodeGen with AssignMapResolver {
+class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode) extends CodeGen with AssignMapResolver {
 
+  val typeNodes = progNode.typedefs.toList
   private def getTypeNodeFromName(typeNodeName:String) = {
     val typeNode = typeNodes find (_.id == typeNodeName)
     if (typeNode.isEmpty) throw new RuntimeException(s"No node type ${typeNodeName} found")
@@ -198,10 +199,10 @@ class TypedefCodeGen(val typedefNode:TypedefNode = null, val typeNodes:List[Type
   /** Given type node name as a string returns the Scala source code
     * The contents are generated from `getContent` method.
     *
-    * @param typeNodeName
     * @return
     */
-  def gen(typeNodeName:String) = {
+  def generate() = {
+    val typeNodeName:String = typedefNode.id
     val plugin_template =
       s"""package chitchat.types
           |class #{class_name} extends #{type_group_name} ( name = "#{name}", #{contents} )""".stripMargin
@@ -217,12 +218,5 @@ class TypedefCodeGen(val typedefNode:TypedefNode = null, val typeNodes:List[Type
       "name" -> typeNodeName,
       "contents" -> contentString)
     getTemplateString(plugin_template, map)
-  }
-
-  def generate() = {
-    if (typedefNode != null)
-      gen(typedefNode.id)
-    else
-      throw new RuntimeException(s"No typedefNode defined")
   }
 }

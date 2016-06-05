@@ -19,5 +19,9 @@ case class AssignmentNode(override val name:String,
     }
     throw new RuntimeException(s"When use getValue in assignment node, expression should be constant ${expression.name}")
   }
+
+  def codeGen(progNode:ProgNode) :String = {
+    ""
+  }
 }
 

@@ -33,37 +33,14 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
     }
   }
 
-//  def getTypedefNode(name:String) : Option[TypedefNode] = {
-//    val result = typedefs filter (_.id == name)
-//    if (result.size == 0) return None
-//    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
-//    Some(result(0))
-//  }
-//
-//  /**
-//    * Returns correlation node from name
-//    *
-//    * @param name
-//    * @return
-//    */
-//  def getCorrelationNode(name:String) : Option[CorrelationNode] = {
-//    val result = correlations filter (_.id == name)
-//    if (result.size == 0) return None
-//    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
-//    Some(result(0))
-//  }
-//
-//  def getFunctionNode(name:String) : Option[FunctionNode] = {
-//    val result = functions filter (_.id == name)
-//    if (result.size == 0) return None
-//    if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
-//    Some(result(0))
-//  }
-
   def getNode[T <: Node](name:String, nodes:ListBuffer[T]) : Option[T] = {
     val result = nodes filter (_.id == name)
     if (result.size == 0) return None
     if (result.size > 1) throw new RuntimeException(s"Error, multiple name $name")
     Some(result(0))
+  }
+
+  def codeGen(progNode:ProgNode) :String = {
+    ""
   }
 }

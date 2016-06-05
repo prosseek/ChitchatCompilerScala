@@ -51,5 +51,24 @@ case class CorrelationNode(override val name:String, override val id:String) ext
   def get(correlationNodes:List[CorrelationNode]) : List[String] = {
     util.Tree(correlationNodes).get(this.id)
   }
+
+  def codeGen(progNode:ProgNode) : String = {
+    val correlationNodes = progNode.correlations.toList
+
+    def generate_for_simple(values: List[String]) = {
+      val res = new StringBuilder
+      res ++= values.mkString("allexists ", " ", "\n")
+      res ++= "stop\n"
+      res.toString
+    }
+
+    if (function_call == null) {
+      val info = get(correlationNodes)
+      return generate_for_simple(info)
+    }
+    else {
+      ""
+    }
+  }
 }
 

@@ -1,4 +1,4 @@
-package codegen
+package node.codegen
 
 import node.{CorrelationNode, NodeGenerator}
 import org.scalatest.FunSuite
@@ -14,8 +14,6 @@ class TestCorrelationGen extends FunSuite
     val cs = prognode.correlations
 
     val c = prognode.getNode[CorrelationNode]("bookseller", prognode.correlations).get
-    val cg = new CorrelationCodeGen(correlationNode = c, correlationNodes = cs.toList)
-
-    println(cg.generate())
+    println(c.codeGen(progNode = prognode))
   }
 }

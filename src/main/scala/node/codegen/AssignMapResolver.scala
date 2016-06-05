@@ -1,4 +1,4 @@
-package codegen
+package node.codegen
 
 import node.{AssignmentNode, FunctionNode, ExpressionsNode, TypedefNode}
 
