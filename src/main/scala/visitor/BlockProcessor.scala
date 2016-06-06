@@ -10,6 +10,6 @@ trait BlockProcessor {
   def process(blockContext: BlockContext, o:ChitchatVisitor) :BlockNode = {
     val e = o.visit(blockContext.expressions()).asInstanceOf[ExpressionsNode]
 
-    BlockNode(name = blockContext.getText(), expressions = e.expressions)
+    BlockNode(name = blockContext.getText(), expressions = e)
   }
 }

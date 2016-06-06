@@ -1,16 +1,100 @@
 package node
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{Map => MMap}
+import node.codegen.Template
 
 case class FunctionNode(override val name:String,
                         val return_type:String,
                         override val id:String,
                         val params:List[String],
                         val block:BlockNode)
-  extends Node(name = name, id = id) {
+  extends Node(name = name, id = id) with Template {
+
+  /**
+    * === function ===
+    * 1. function name => label
+    * 2. the number of parameter (n) makes the "return n"
+    * 3. the parameters are accessed with $bp - N
+    * 4. local variable makes additional code
+    * 5. local variables are accessed with $bp + N
+    **
+    *==== Example ====
+    * {{{
+    *   F2(x, y, z)
+    *   x + y + z
+    * }}}
+    * {{{
+    *   F2:
+    *   load $bp - 1
+    *   load $bp - 2
+    *   iadd
+    *   load $bp - 3
+    *   iadd
+    *   return 3
+    * }}}
+    */
+
+  /**
+    * {{{
+    *   f(a,b,c)
+    *   size = |a,b,c| = 3
+    *   a = index 0 => bp - 3 = (size - index)
+    *   b = index 1 => bp - 2
+    *   c = index 2 => bp - 1
+    * }}}
+    *
+    * @param name
+    * @return
+    */
+  def parameterTranslate(name:String) = {
+    if (params.contains(name)) {
+      val count = params.length - params.indexOf(name)
+      "$bp" + s" - ${count}"
+    }
+    else
+      name
+  }
+
+  def getPreCode() = {
+    /*
+           read producename
+           jpeekfalse END
+           read price_i
+           jpeekfalse END
+           function_call_stack priceMatch 2
+       END:
+           stop
+     */
+    val endlabel = id + "_END"
+    val paramsCode = new StringBuilder()
+    params foreach {
+      param => paramsCode ++= s"read ${param}\njpeekfalse ${endlabel}\n"
+    }
+    paramsCode ++= s"function_call_stack ${id} ${params.length}\n"
+    paramsCode ++= s"${endlabel}:\nstop\n"
+    paramsCode.toString()
+  }
 
   def codeGen(progNode:ProgNode) :String = {
-    ""
+    val template =
+      """#{function_name}:
+        |#{precode}
+        |#{block_code}
+        |return #{param_count}
+      """.stripMargin
+
+    val map = MMap[String, String]()
+
+    progNode.context = this
+
+    map("function_name") = id
+    map("precode") = getPreCode()
+    map("block_code") = block.codeGen(progNode)
+    map("param_count") = params.size.toString
+    val result = getTemplateString(template, map.toMap)
+    progNode.context = null
+
+    result
   }
 
 }

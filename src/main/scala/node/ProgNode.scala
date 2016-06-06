@@ -14,6 +14,11 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
   val functions = ListBuffer[FunctionNode]()
   val commands = ListBuffer[CommandNode]()
 
+  // in expression node, parameters or local variables should
+  // be translated into $bp - N.
+  // context should be recorded to process this
+  var context: FunctionNode = _
+
   /**
     * Read nodes into fields
     *

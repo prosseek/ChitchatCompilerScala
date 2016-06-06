@@ -4,7 +4,9 @@ import node._
 
 import scala.collection.mutable.{ListBuffer, Map => MMap}
 
-class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode) extends CodeGen with AssignMapResolver {
+class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode)
+  extends Template
+  with AssignMapResolver {
 
   val typeNodes = progNode.typedefs.toList
   private def getTypeNodeFromName(typeNodeName:String) = {
