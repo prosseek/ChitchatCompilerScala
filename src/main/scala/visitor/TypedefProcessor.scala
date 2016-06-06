@@ -15,13 +15,19 @@ trait TypedefProcessor {
     // get Contexts
     val basetype = ctx.base_type()
     val annotation = ctx.annotation().getText()
+    val basename = o.visit(basetype.id()).asInstanceOf[IdNode].name.replace("\"", "")
 
+    // todo: CLARIFY
+    // id: ID | STRING;
+    // string's \" should be removed to be used as a name
+    val idNode = o.visit(ctx.id()).asInstanceOf[IdNode].name
+    val newIdNode = IdNode(name = idNode.replace("\"", ""))
     // create node
     val typenode = TypedefNode(
       name = ctx.getText(),
-      id = ctx.id().getText().replace("\"", ""),
+      id = newIdNode,
       annotation = annotation,
-      base_name = basetype.id().getText().replace("\"", ""))
+      base_name = basename)
 
     // type has multiple expressions
     // add only expressions with assignment, value, or function call

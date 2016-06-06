@@ -5,7 +5,7 @@ import node.codegen.Template
 
 case class FunctionNode(override val name:String,
                         val return_type:String,
-                        override val id:String,
+                        override val id:IdNode,
                         val params:List[String],
                         val block:BlockNode)
   extends Node(name = name, id = id) with Template {
@@ -87,7 +87,7 @@ case class FunctionNode(override val name:String,
 
     progNode.context = this
 
-    map("function_name") = id
+    map("function_name") = id.name
     map("precode") = getPreCode()
     map("block_code") = block.codeGen(progNode)
     map("param_count") = params.size.toString

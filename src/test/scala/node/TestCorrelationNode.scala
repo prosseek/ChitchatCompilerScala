@@ -24,8 +24,8 @@ class TestCorrelationNode extends FunSuite {
     val prognode = NodeGenerator.get("./resources/unittest_example/correlation_simple.txt")
     val bs = prognode.getNode[CorrelationNode]("bookseller", prognode.correlations).get
     val loc = prognode.getNode[CorrelationNode]("location", prognode.correlations).get
-    assert(bs.id == "bookseller")
-    assert(loc.id == "location")
+    assert(bs.id.name == "bookseller")
+    assert(loc.id.name == "location")
     assert(bs.function_call == null)
     assert(loc.function_call == null)
 

@@ -48,7 +48,7 @@ trait AssignMapResolver {
       typeNode => {
         typeNode.assignments foreach {
           assignment => { // AssignmentNode
-            val key = assignment.id
+            val key = assignment.id.name
             map(key) = assignment.getValueInString(key)
           }
         }
@@ -64,7 +64,7 @@ trait AssignMapResolver {
     * @return
     */
   def getTypeNode(name:String, typeNodes:List[TypedefNode]) = {
-    val typeNode = typeNodes find (_.id == name)
+    val typeNode = typeNodes find (_.id.name  == name)
     if (typeNode.isEmpty) throw new RuntimeException(s"No ${name} in types")
     typeNode.get
   }
@@ -184,7 +184,7 @@ trait AssignMapResolver {
     //       need more documentation
     val typeNode = getTypeNode(stringName, typeNodes)
     if (typeNode.function_call != null) {
-      val fname = typeNode.function_call.id
+      val fname = typeNode.function_call.id.name
       if (fname == "alphanum") {
         map("type") = "assign"
         map("max") = "122" // 'Z'
@@ -202,7 +202,7 @@ trait AssignMapResolver {
       assignments foreach {
         assignment =>
           map("type") = "assign"
-          val key = assignment.id
+          val key = assignment.id.name
           map(key) = assignment.expression.name
       }
     }
@@ -244,7 +244,7 @@ trait AssignMapResolver {
       var parentName = typeNode.base_name
       while (!isParentInGroups(parentName)) {
 
-        val result = typeNodes find (_.id == parentName)
+        val result = typeNodes find (_.id.name  == parentName)
         if (result.isDefined) {
           // make an advancement, the parentName should be one of the four to break the loop
           parent = result.get
@@ -257,7 +257,7 @@ trait AssignMapResolver {
     }
 
     // 1. find typeNode that should be in the type nodes (database)
-    val _typeNode = (typeNodes find (_.id == typeNodeName))
+    val _typeNode = (typeNodes find (_.id.name  == typeNodeName))
     if (_typeNode.isEmpty)
       throw new RuntimeException(s"Type ${typeNodeName} is not available")
     val typeNode = _typeNode.get

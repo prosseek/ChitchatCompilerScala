@@ -22,9 +22,9 @@ class TestAssignMapResolver extends FunSuite with AssignMapResolver {
   val types = prognode.typedefs.toList
 
   test("getTypeGroupName test") {
-    assert(getTypeGroupName("time", types).toString() == "TypedefNode(+typetimeextendsEncoding(hour,minute),time,+,Encoding)")
-    assert(getTypeGroupName("market time", types).toString() == "TypedefNode(+typetimeextendsEncoding(hour,minute),time,+,Encoding)")
-    assert(getTypeGroupName("markethour", types).toString() == "TypedefNode(-typehourextendsRange(size=5,min=0,max=23,signed=false),hour,-,Range)")
+    assert(getTypeGroupName("time", types).toString() == "TypedefNode(+typetimeextendsEncoding(hour,minute),IdNode(time),+,Encoding)")
+    assert(getTypeGroupName("market time", types).toString() == "TypedefNode(+typetimeextendsEncoding(hour,minute),IdNode(time),+,Encoding)")
+    assert(getTypeGroupName("markethour", types).toString() == "TypedefNode(-typehourextendsRange(size=5,min=0,max=23,signed=false),IdNode(hour),-,Range)")
   }
 
   test("getAssignMapFromRangeName test") {
@@ -42,9 +42,10 @@ class TestAssignMapResolver extends FunSuite with AssignMapResolver {
   }
 
   test("get history test") {
+    //println(getHistory("market time", types).toString)
     assert(getHistory("market time", types).toString
       ==
-      "List(TypedefNode(+type\"market time\"extendstime(markethour),market time,+,time), TypedefNode(+typetimeextendsEncoding(hour,minute),time,+,Encoding))")
+      "List(TypedefNode(+type\"market time\"extendstime(markethour),IdNode(market time),+,time), TypedefNode(+typetimeextendsEncoding(hour,minute),IdNode(time),+,Encoding))")
   }
 
   test("getRangeNamesFromEncoding test") {

@@ -1,6 +1,6 @@
 package node
 
-abstract class Node(val name:String = "", val id:String = "") {
+abstract class Node(val name:String = "", val id:IdNode = null) {
 
   def codeGen(progNode:ProgNode) : String
 }

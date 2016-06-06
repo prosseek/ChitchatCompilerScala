@@ -20,7 +20,7 @@ case class Tree (val correlationNodes:List[CorrelationNode]) {
   }
 
   def makeNode(correlationNode: CorrelationNode) = {
-    val id = correlationNode.id
+    val id = correlationNode.id.name
 
     val nodeNames = nodes map { _.name }
     if (!nodeNames.contains(id)) {

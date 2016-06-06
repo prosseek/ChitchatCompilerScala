@@ -17,7 +17,7 @@ trait FunctionProcessor {
   def process(ctx:FunctionContext, o:ChitchatVisitor) = {
     val name = ctx.getText()
     val return_type = ctx.return_type().getText()
-    val id = ctx.id().getText()
+    val id = o.visit(ctx.id()).asInstanceOf[IdNode]
 
     // val ids:List[IdNode]
     val ids = o.visit(ctx.params()).asInstanceOf[ParamsNode].ids

@@ -6,7 +6,7 @@ class TestTemplate extends FunSuite with Template {
 
   test("simple") {
     val template = "#{a}"
-    val map = Map[String, String]("a" -> "push \\$bp - 2")
+    val map = Map[String, String]("a" -> "push $bp - 2")
     val res = getTemplateString(template, map)
     println(res)
   }

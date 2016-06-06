@@ -2,7 +2,7 @@ package node
 
 import scala.collection.mutable.{ListBuffer, Set => MSet}
 
-case class CorrelationNode(override val name:String, override val id:String) extends Node(name = name, id = id) {
+case class CorrelationNode(override val name:String, override val id:IdNode) extends Node(name = name, id = id) {
   var function_call:Function_callNode = null
   var values = ListBuffer[ValueNode]()
 
@@ -49,7 +49,7 @@ case class CorrelationNode(override val name:String, override val id:String) ext
     * @return a set of name strings
     */
   def get(correlationNodes:List[CorrelationNode]) : List[String] = {
-    util.Tree(correlationNodes).get(this.id)
+    util.Tree(correlationNodes).get(this.id.name)
   }
 
   def codeGen(progNode:ProgNode) : String = {

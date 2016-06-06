@@ -10,7 +10,7 @@ class TestFunctionNode extends FunSuite {
   test ("simple") {
 
     assert(bs.params.size == 2)
-    assert(bs.id == "priceMatch")
+    assert(bs.id.name == "priceMatch")
 
     // function bool priceMatch(produceName, price)
     assert(bs.params(0) == "produceName")

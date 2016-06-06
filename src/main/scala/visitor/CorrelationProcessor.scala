@@ -15,7 +15,7 @@ import parser.ChitchatParser.CorrelationContext
   */
 trait CorrelationProcessor {
   def process(ctx: CorrelationContext, o:ChitchatVisitor) : CorrelationNode = {
-    val c = CorrelationNode(name = ctx.getText(), id = ctx.id().getText())
+    val c = CorrelationNode(name = ctx.getText(), id = o.visit(ctx.id()).asInstanceOf[IdNode])
     val expressions = o.visit(ctx.expressions).asInstanceOf[ExpressionsNode].expressions
 
     expressions foreach { expression =>

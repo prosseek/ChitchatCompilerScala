@@ -1,7 +1,7 @@
 package node
 
 case class AssignmentNode(override val name:String,
-                          override val id:String,
+                          override val id:IdNode,
                           val expression:ExpressionNode) extends Node(name = name, id = id)
 {
   /**
@@ -20,7 +20,14 @@ case class AssignmentNode(override val name:String,
     throw new RuntimeException(s"When use getValue in assignment node, expression should be constant ${expression.name}")
   }
 
+  /**
+    * assignment: id '=' expression ;
+    *
+    * @param progNode
+    * @return
+    */
   def codeGen(progNode:ProgNode) :String = {
+    val idCode = id.codeGen(progNode)
     ""
   }
 }

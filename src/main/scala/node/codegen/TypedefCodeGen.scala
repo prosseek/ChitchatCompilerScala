@@ -10,7 +10,7 @@ class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode)
 
   val typeNodes = progNode.typedefs.toList
   private def getTypeNodeFromName(typeNodeName:String) = {
-    val typeNode = typeNodes find (_.id == typeNodeName)
+    val typeNode = typeNodes find (_.id.name == typeNodeName)
     if (typeNode.isEmpty) throw new RuntimeException(s"No node type ${typeNodeName} found")
     typeNode.get
   }
@@ -90,7 +90,7 @@ class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode)
         // history = markethour - hour
         // 2. hour <-- this is removed as last item is the same as hour
         // 3. minute
-        rangeNamesWithoutHistory -= history.last.id
+        rangeNamesWithoutHistory -= history.last.id.name
       }
     }
 
@@ -110,7 +110,7 @@ class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode)
     val rangeContentStrings = historyList map {
       history => {
         val map = getAssignMapFromHistory(history)
-        map("name") = history.last.id
+        map("name") = history.last.id.name
         val template = s"""new Range(name = "#{name}", size = #{size}, min = #{min}, max = #{max}, signed = #{signed})"""
         getTemplateString(template, map.toMap)
       }
@@ -204,7 +204,7 @@ class TypedefCodeGen(val typedefNode:TypedefNode, val progNode:ProgNode)
     * @return
     */
   def generate() = {
-    val typeNodeName:String = typedefNode.id
+    val typeNodeName:String = typedefNode.id.name
     val plugin_template =
       s"""package chitchat.types
           |class #{class_name} extends #{type_group_name} ( name = "#{name}", #{contents} )""".stripMargin
