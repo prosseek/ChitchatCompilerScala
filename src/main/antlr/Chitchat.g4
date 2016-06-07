@@ -16,7 +16,7 @@ situation: SITUATION id '(' expressions ')' '=' expression ;
 schema: annotation SCHEMA id '=' '(' expressions ')' ('|' '(' expressions ')' )* ;
 
 // value
-valuedef: VALUE id '=' block ;
+valuedef: VALUE id params '=' block ;
 
 // function
 function: FUNCTION return_type id params '=' block ;
@@ -34,15 +34,16 @@ expressions: (expression ','?)*;
 // due to mutual recursion, logic and comparion 
 // is in this form not comparsion: expression ... form.
 // the processor generates a Comparison/Logic node from the expression
-expression: function_call | value | assignment
+expression: function_call | value | assignment | absolute
           | '(' expression ')'
+          | expression arithmetic_operator expression
           | expression comparison_operator expression  // comparsion
           | expression logic_operator expression ;     // logic
 
 params: '(' ( id ','? )* ')' ;
 args: '(' ( value ','?)* ')' ;
 
-value: id | constant | list ;
+value: id | constant_unit | list ;
 function_call: id args ;
 assignment: id '=' expression ;
 absolute: '|' expression '-' expression '|' ;
@@ -56,12 +57,14 @@ block: '{' expressions '}';
 
 id: ID | STRING;
 annotation: ('+'|'-');
+arithmetic_operator: '+' | '-' | '*' | '/' ;
 comparison_operator: '<'|'>'|'<='|'>=' | '==' ;
 logic_operator: '&&' | '||' ;
+constant_unit : constant (unit)? ;
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
 unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
 unit_value: constant (unit)?;
-list: '[' (constant ','?)+ ']' ;
+list: '[' (value ','?)+ ']' ;
 
 ////////////////////////////////////////
 // TERMINAL

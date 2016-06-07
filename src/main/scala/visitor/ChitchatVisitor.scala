@@ -19,6 +19,8 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with ListProcessor
   with ArgsProcessor
   with ParamsProcessor
+  with ValuedefProcessor
+  with Constant_unitProcessor
 {
   var prognode: ProgNode = _
 
@@ -63,7 +65,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   //override def visitComparison(ctx: ComparisonContext) : ComparisonNode = process(ctx, this)
   override def visitFunction_call(ctx:Function_callContext) : Function_callNode = process(ctx, this)
   override def visitList(ctx:ListContext) : ListNode = process(ctx, this)
-  override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())
+
   override def visitId(ctx:IdContext) : IdNode = IdNode.make(name = ctx.getText())
 
   override def visitExpressions(ctx: ExpressionsContext) : ExpressionsNode = process(ctx, this)
@@ -74,4 +76,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitArgs(ctx:ArgsContext) : ArgsNode = process(ctx, this)
 
   override def visitBlock(ctx:BlockContext) : BlockNode = process(ctx, this)
+  override def visitValuedef(ctx:ValuedefContext) : ValuedefNode = process(ctx, this)
+  override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())
+  override def visitConstant_unit(ctx:Constant_unitContext) : Constant_unitNode = process(ctx, this)
 }

@@ -1,0 +1,1 @@
+situation partyTime(partyname) = ([date, time] - now) >= 0 _hour
