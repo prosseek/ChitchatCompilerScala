@@ -13,19 +13,15 @@ import parser.ChitchatParser.TypedefContext
 trait TypedefProcessor {
   def process(ctx: TypedefContext, o:ChitchatVisitor) : TypedefNode = {
     // get Contexts
+    val name = ctx.getText()
     val basetype = ctx.base_type()
     val annotation = ctx.annotation().getText()
-    val basename = o.visit(basetype.id()).asInstanceOf[IdNode].name.replace("\"", "")
+    val id = o.visit(ctx.id()).asInstanceOf[IdNode]
+    val basename = o.visit(basetype.id()).asInstanceOf[IdNode].name
 
-    // todo: CLARIFY
-    // id: ID | STRING;
-    // string's \" should be removed to be used as a name
-    val idNode = o.visit(ctx.id()).asInstanceOf[IdNode].name
-    val newIdNode = IdNode(name = idNode.replace("\"", ""))
-    // create node
     val typenode = TypedefNode(
-      name = ctx.getText(),
-      id = newIdNode,
+      name = name,
+      id = id,
       annotation = annotation,
       base_name = basename)
 

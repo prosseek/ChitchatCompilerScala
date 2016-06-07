@@ -62,7 +62,7 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitFunction_call(ctx:Function_callContext) : Function_callNode = process(ctx, this)
   override def visitList(ctx:ListContext) : ListNode = process(ctx, this)
   override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())
-  override def visitId(ctx:IdContext) : IdNode = IdNode(name = ctx.getText())
+  override def visitId(ctx:IdContext) : IdNode = IdNode.make(name = ctx.getText())
 
   override def visitExpressions(ctx: ExpressionsContext) : ExpressionsNode = process(ctx, this)
   override def visitExpression(ctx: ExpressionContext) : ExpressionNode = process(ctx, this)
