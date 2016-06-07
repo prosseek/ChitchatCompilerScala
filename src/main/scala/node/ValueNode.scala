@@ -8,7 +8,7 @@ case class ValueNode (override val name:String, val node:Node) extends Node(name
   def codeGen(progNode:ProgNode) :String = {
     node match {
       case IdNode(name) => node.codeGen(progNode)
-      case ConstantNode(name) => node.codeGen(progNode)
+      case Constant_unitNode(name, constant, unit) => node.codeGen(progNode)
       case _ => "WHY?"
     }
   }

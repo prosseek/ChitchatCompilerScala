@@ -62,7 +62,7 @@ comparison_operator: '<'|'>'|'<='|'>=' | '==' ;
 logic_operator: '&&' | '||' ;
 constant_unit : constant (unit)? ;
 constant: INT | FLOAT | TRUE | FALSE | CHAR ;
-unit: '_km' | '_m' | '_min' | '_sec' | '_hour' ;
+unit: '_km' | '_m' | '_hour' ;
 unit_value: constant (unit)?;
 list: '[' (value ','?)+ ']' ;
 

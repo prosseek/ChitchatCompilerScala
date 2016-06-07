@@ -45,6 +45,13 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
     Some(result(0))
   }
 
+  def isValue(value:String) : Option[String] = {
+    valuedefs foreach {
+      valuedef => if (valuedef.map.keySet.contains(value)) return valuedef.map.get(value)
+    }
+    None
+  }
+
   def codeGen(progNode:ProgNode) :String = {
     ""
   }

@@ -60,11 +60,87 @@ case class SituationNode (override val name:String,
                           val expression:ExpressionNode) extends Node(name = name, id = id) with Template {
 
   def getPrecode(endLabel:String) = {
-    ""
+    val res = new StringBuilder()
+    val ps = params.ids map {
+      id => res ++= s"read ${id.name}\njpeekfalse ${endLabel}\n"
+    }
+    res.toString
   }
 
-  def getFunctionBody() = {
-    ""
+  def unitToValue(value:String, unit:String) = {
+    val u =  unit match {
+      case "_km" => 1000
+      case "_m" => 1
+      case "_hour" => 1
+      case _ => throw new RuntimeException(s"Wrong unit ${unit}")
+    }
+    val result = value.toInt * u
+    result.toString
+  }
+
+  def getFunctionBody(progNode:ProgNode) :String = {
+    def getListFromExpression(e:ExpressionNode) : ListNode = {
+      // expression -> value -> list
+      val v = e.node.isInstanceOf[ValueNode]
+      if (v) {
+        val l = v.asInstanceOf[ValueNode].node.isInstanceOf[ListNode]
+        if (l) {
+          return v.asInstanceOf[ValueNode].node.asInstanceOf[ListNode]
+        }
+      }
+      throw new RuntimeException(s"not found list in the expression")
+    }
+    def generateCodeFromParameters() = {
+      // progNode.isValue("")
+    }
+    def processArithmeticNode(arithmeticNode: ArithmeticNode) = {
+      val a = arithmeticNode.expression1
+      val list = getListFromExpression(a)
+      println(list)
+      val code = generateCodeFromParameters()
+      ""
+    }
+    def processAbsoluteNode(absoluteNode: AbsoluteNode) = {
+      ""
+    }
+
+    val res = new StringBuilder
+    // 1. get the [list]
+    if (expression.node.isInstanceOf[ComparisonNode]) {
+      val c = expression.node.asInstanceOf[ComparisonNode]
+
+      // a >= 40 _km <- a is the e1
+      val e1 = c.expression1.node
+      val t1 = e1.isInstanceOf[ArithmeticNode]
+      val t2 = e1.isInstanceOf[AbsoluteNode]
+
+      if (t1) { // arithmetic node
+        res ++= processArithmeticNode(e1.asInstanceOf[ArithmeticNode])
+      }
+      else if (t2) { // absolute node
+        res ++= processAbsoluteNode(e1.asInstanceOf[AbsoluteNode])
+      }
+      else {
+        throw new RuntimeException(s"only arithmetic node or absolute node can be used for e1 not ${e1.name}")
+      }
+
+      // a >= 40 _km <- 40 _km is the e2
+      val e2 = c.expression2
+      if (e2.node.isInstanceOf[ValueNode] &&
+          e2.node.asInstanceOf[ValueNode].node.isInstanceOf[Constant_unitNode]) {
+        val constant_unit = e2.node.asInstanceOf[ValueNode].node.asInstanceOf[Constant_unitNode]
+        val unitNumber = unitToValue(constant_unit.constant.name, constant_unit.unit)
+        res ++= unitNumber
+      }
+      else {
+        throw new RuntimeException(s"In comparison, with a >= b format b should be unit constant ${e2.name}")
+      }
+      val op = c.op
+
+      res.toString
+    }
+    else
+      throw new RuntimeException(s"Only comparison is allowed in situation node ${name}")
   }
 
   def codeGen(progNode:ProgNode) :String = {
@@ -73,17 +149,17 @@ case class SituationNode (override val name:String,
         |#{precode}
         |f2 #{funcname} 0
         |#{label_end}:
-        |  stop
+        |stop
         |#{funcname}:
         |#{function_body}
       """.stripMargin
     val map = MMap[String, String]()
 
-
     map("funcname") = id.name
-    map("label_end") = id.name + "_END"
-    map("precode") = getPrecode(endLabel = map("label_end"))
-    map("function_body") = getFunctionBody()
+    val e:String = id.name + "_END"
+    map("label_end") = e
+    map("precode") = getPrecode(e)
+    map("function_body") = getFunctionBody(progNode)
 
     getTemplateString(template, map.toMap)
   }

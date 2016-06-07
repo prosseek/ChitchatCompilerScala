@@ -36,6 +36,15 @@ trait ExpressionProcessor  {
           expression1 = o.visit(e1).asInstanceOf[ExpressionNode],
           expression2 = o.visit(e2).asInstanceOf[ExpressionNode])
       }
+      if (ctx.arithmetic_operator() != null) {
+        result = ArithmeticNode(name=ctx.getText(),
+          op = ctx.arithmetic_operator().getText(),
+          expression1 = o.visit(e1).asInstanceOf[ExpressionNode],
+          expression2 = o.visit(e2).asInstanceOf[ExpressionNode])
+      }
+    }
+    else if (ctx.absolute() != null) {
+      result = o.visit(ctx.absolute())
     }
     else if (ctx.assignment() != null) {
       result = o.visit(ctx.assignment())
@@ -45,6 +54,9 @@ trait ExpressionProcessor  {
     }
     else if (ctx.value() != null) {
       result = o.visit(ctx.value())
+    }
+    else if (ctx.absolute() != null) {
+      result = o.visit(ctx.absolute())
     }
     else {
       throw new RuntimeException(s"Error expression wrong ${ctx.getText()}")
