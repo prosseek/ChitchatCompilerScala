@@ -14,6 +14,14 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
   val functions = ListBuffer[FunctionNode]()
   val commands = ListBuffer[CommandNode]()
 
+  // value node has predefined values
+  ValuedefNode.predefined foreach {
+    valuedefNode => {
+      add(valuedefNode)
+      valuedefNode.predefined = true
+    }
+  }
+
   // in expression node, parameters or local variables should
   // be translated into $bp - N.
   // context should be recorded to process this
