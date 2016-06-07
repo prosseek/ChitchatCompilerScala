@@ -12,6 +12,8 @@ trait ValuedefProcessor {
 
     val expressions = o.visit(ctx.block()).asInstanceOf[BlockNode].expressions.expressions
 
+    // todo: the params are not checked.
+    // we assume all the parameters are the same as map.keySet(), but this may not always be true
     val res = expressions map {
       case expression if (expression.node.isInstanceOf[AssignmentNode]) => {
         val node = expression.node.asInstanceOf[AssignmentNode]

@@ -10,7 +10,7 @@ base_type: id '(' expressions ')' ;
 correlation: CORRELATION id '=' '(' expressions ')' ;
 
 // situation
-situation: SITUATION id '(' expressions ')' '=' expression ;
+situation: SITUATION id params '=' expression ;
 
 // schema
 schema: annotation SCHEMA id '=' '(' expressions ')' ('|' '(' expressions ')' )* ;

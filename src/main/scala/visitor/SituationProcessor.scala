@@ -1,6 +1,6 @@
 package visitor
 
-import node.SituationNode
+import node.{ExpressionNode, IdNode, ParamsNode, SituationNode}
 import org.antlr.v4.runtime.ParserRuleContext
 import parser.ChitchatParser.SituationContext
 
@@ -21,8 +21,10 @@ trait SituationProcessor {
     *     */
   // def process(ctx:SituationContext, o:ChitchatVisitor) : SituationNode = {
   def process(ctx:SituationContext, o:ChitchatVisitor) : SituationNode = {
-    //val sitnode = SituationNode(name = ctx.id().getText())
-    //sitnode
-    null
+    val name = ctx.getText()
+    val id = o.visit(ctx.id()).asInstanceOf[IdNode]
+    val ps = o.visit(ctx.params()).asInstanceOf[ParamsNode]
+    val expression = o.visit(ctx.expression()).asInstanceOf[ExpressionNode]
+    SituationNode(name = name, id = id, params = ps, expression = expression)
   }
 }
