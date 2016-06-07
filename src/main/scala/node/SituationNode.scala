@@ -4,34 +4,34 @@ import node.codegen.Template
 import scala.collection.mutable.{Map => MMap}
 
 /**
-  === Example1 ===
-   {{{
-   situation partyTime(partyname) = ([date, time] - now) >= 0 _hour
-
-        read partyname
-        jpeekfalse END
-        f2 partyTime 0
-    END:
-        stop
-    partyTime:
-        read time
-        jpeekfalse END
-        read date
-        jpeekfalse END
-        here
-        distance datetime
-        push 0
-        geq
-        r 0
-    }}}
-    === Example2 ===
+  * === Example1 ===
+  * {{{
+  * situation partyTime(partyname) = ([date, time] - now) >= 0 _hour
+  **
+  *read partyname
+  *jpeekfalse END
+  *f2 partyTime 0
+  *END:
+  *stop
+  *partyTime:
+  *read time
+  *jpeekfalse END
+  *read date
+  *jpeekfalse END
+  *here
+  *distance datetime
+  *push 0
+  *geq
+  *r 0
+  *}}}
+  *=== Example2 ===
     *{{{
     *   value cityParkCenter(latitude, longitude) = {
     *      latitude = [30, 25, 01, 74]
     *      longitude = [-97, 47, 21, 83]
     *   }
     *   situation nearCityPark() = |[latitude, longitude] - cityParkCenter| <= 5 _km
-    #     f2 nearCityPark 0
+  *#     f2 nearCityPark 0
     *   END:
     *       stop
     *
@@ -67,6 +67,7 @@ case class SituationNode (override val name:String,
     *      read partyname
     *      jpeekfalse END
     *  }}}
+    *
     * @param endLabel
     * @return
     */
@@ -157,8 +158,13 @@ case class SituationNode (override val name:String,
           |r 0
         """.stripMargin
 
+      val e1 = c.expression1
+      val listNode: ListNode = if (e1.isAbsolute || e1.isArithmetic)
+        if (e1.isAbsolute) e1.asAbsolute.expression1.asValue.asList
+        else e1.asArithmetic.expression1.asValue.asList
+      else throw new RuntimeException(s"e1 in comparison node is neither absolute nor arithmetic")
 
-      map("code_from_list") = ""
+      map("code_from_list") = getCodeFromList(listNode, endLabel)
       map("code_from_value") = ""
       map("call_function") = ""
       map("push_value") = ""
@@ -170,30 +176,34 @@ case class SituationNode (override val name:String,
       throw new RuntimeException(s"Only comparison is allowed in situation node ${name}")
   }
 
-  def getListFromExpression(e:ExpressionNode) : ListNode = {
-    // expression -> value -> list
-    val v = e.node.isInstanceOf[ValueNode]
-    if (v) {
-      val l = v.asInstanceOf[ValueNode].node.isInstanceOf[ListNode]
-      if (l) {
-        return v.asInstanceOf[ValueNode].node.asInstanceOf[ListNode]
+  def getCodeFromList(l:ListNode, endLabel:String) : String = {
+    val s = new StringBuilder
+    l.values foreach {
+      value => {
+        if (value.isId) {
+          val id = value.asId.name
+          s ++= s"read ${id}\njpeekfalse ${endLabel}\n"
+        }
+        else
+          throw new RuntimeException(s"only id is allowed in situation node's list")
       }
     }
-    throw new RuntimeException(s"not found list in the expression")
+    return s.toString
   }
+
   def generateCodeFromParameters() = {
     // progNode.isValue("")
   }
   def processArithmeticNode(arithmeticNode: ArithmeticNode) = {
     val a = arithmeticNode.expression1
-    val list = getListFromExpression(a)
-    println(list)
+//    val list = getListFromExpression(a)
+//    println(list)
     val code = generateCodeFromParameters()
     ""
   }
   def processAbsoluteNode(absoluteNode: AbsoluteNode) = {
-    val a = absoluteNode.expression1
-    val list = getListFromExpression(a)
+//    val a = absoluteNode.expression1
+//    val list = getListFromExpression(a)
     ""
   }
 
