@@ -1,8 +1,10 @@
 package node
 
-import scala.collection.mutable.{ListBuffer, Set => MSet}
+import node.codegen.Template
 
-case class CorrelationNode(override val name:String, override val id:IdNode) extends Node(name = name, id = id) {
+import scala.collection.mutable.{ListBuffer, Map => MMap}
+
+case class CorrelationNode(override val name:String, override val id:IdNode) extends Node(name = name, id = id) with Template {
   var function_call:Function_callNode = null
   var values = ListBuffer[ValueNode]()
 
@@ -52,6 +54,43 @@ case class CorrelationNode(override val name:String, override val id:IdNode) ext
     util.Tree(correlationNodes).get(this.id.name)
   }
 
+  def generate_for_function(progNode:ProgNode) = {
+
+    val fnode = progNode.functions.find(_.id.name == function_call.id.name)
+    if (fnode.isEmpty) throw new RuntimeException(s"No function ${function_call.id.name} found")
+
+    def getPreCode(params:List[ValueNode]) = {
+      /*
+             read producename
+             jpeekfalse END
+             read price_i
+             jpeekfalse END
+             function_call_stack priceMatch 2
+         END:
+             stop
+       */
+      val endlabel = id.name + "_END"
+      val paramsCode = new StringBuilder()
+      params foreach {
+        param => paramsCode ++= s"read ${param.name}\njpeekfalse ${endlabel}\n"
+      }
+      paramsCode ++= function_call.codeGen(progNode)
+      paramsCode ++= s"${endlabel}:\nstop\n"
+      paramsCode.toString()
+    }
+
+    val template =
+      """
+        |#{preCode}
+        |#{function}
+      """.stripMargin
+
+    val map = MMap[String, String]()
+    map("preCode") = getPreCode(function_call.args.values)
+    map("function") = fnode.get.codeGen(progNode)
+    getTemplateString(template, map.toMap)
+  }
+
   def codeGen(progNode:ProgNode) : String = {
     val correlationNodes = progNode.correlations.toList
 
@@ -67,7 +106,7 @@ case class CorrelationNode(override val name:String, override val id:IdNode) ext
       return generate_for_simple(info)
     }
     else {
-      ""
+      return generate_for_function(progNode)
     }
   }
 }

@@ -193,7 +193,7 @@ trait AssignMapResolver {
       else {
         map("type") = "function_call"
         map("function_name") = fname
-        map("value") = typeNode.function_call.constants(0).name
+        map("value") = typeNode.function_call.args.values(0).name
       }
     }
     else if (typeNode.assignments != null) {

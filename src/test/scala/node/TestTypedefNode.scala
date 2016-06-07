@@ -53,8 +53,8 @@ class TestTypedefNode extends FunSuite {
     val f = a.function_call
     assert(f.name == "maxlength(10)")
     assert(f.id.name == "maxlength")
-    assert(f.constants.size == 1)
-    assert(f.constants(0).name == "10")
+    assert(f.args.values.size == 1)
+    assert(f.args.values(0).name == "10")
   }
 
   /**

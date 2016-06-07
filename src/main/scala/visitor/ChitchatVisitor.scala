@@ -42,6 +42,8 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
     while (it.hasNext) {
       val item = it.next()
       val res: Node = visit(item)
+      if (res == null)
+        throw new RuntimeException(s"Null point returned - wrong element in the source code")
       prognode.add(res)
     }
     prognode

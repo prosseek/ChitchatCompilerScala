@@ -12,7 +12,7 @@ import scala.collection.mutable.ListBuffer
 trait Function_callProcessor {
   def process(ctx:Function_callContext, o:ChitchatVisitor) = {
     val id = o.visit(ctx.id()).asInstanceOf[IdNode]
-    val constants = o.visit(ctx.args()).asInstanceOf[ArgsNode].constants
-    Function_callNode(name = ctx.getText(), id = id, constants = constants)
+    val args = o.visit(ctx.args()).asInstanceOf[ArgsNode]
+    Function_callNode(name = ctx.getText(), id = id, args = args)
   }
 }

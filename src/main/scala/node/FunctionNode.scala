@@ -55,30 +55,9 @@ case class FunctionNode(override val name:String,
       name
   }
 
-  def getPreCode() = {
-    /*
-           read producename
-           jpeekfalse END
-           read price_i
-           jpeekfalse END
-           function_call_stack priceMatch 2
-       END:
-           stop
-     */
-    val endlabel = id + "_END"
-    val paramsCode = new StringBuilder()
-    params foreach {
-      param => paramsCode ++= s"read ${param}\njpeekfalse ${endlabel}\n"
-    }
-    paramsCode ++= s"function_call_stack ${id} ${params.length}\n"
-    paramsCode ++= s"${endlabel}:\nstop\n"
-    paramsCode.toString()
-  }
-
   def codeGen(progNode:ProgNode) :String = {
     val template =
       """#{function_name}:
-        |#{precode}
         |#{block_code}
         |return #{param_count}
       """.stripMargin
@@ -88,7 +67,6 @@ case class FunctionNode(override val name:String,
     progNode.context = this
 
     map("function_name") = id.name
-    map("precode") = getPreCode()
     map("block_code") = block.codeGen(progNode)
     map("param_count") = params.size.toString
     val result = getTemplateString(template, map.toMap)

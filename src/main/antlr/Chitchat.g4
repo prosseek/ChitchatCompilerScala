@@ -40,7 +40,7 @@ expression: function_call | value | assignment
           | expression logic_operator expression ;     // logic
 
 params: '(' ( id ','? )* ')' ;
-args: '(' ( constant ','?)* ')' ;
+args: '(' ( value ','?)* ')' ;
 
 value: id | constant | list ;
 function_call: id args ;

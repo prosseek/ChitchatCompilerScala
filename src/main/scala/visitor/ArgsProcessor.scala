@@ -7,15 +7,15 @@ import scala.collection.mutable.ListBuffer
 
 trait ArgsProcessor {
   def process(ctx: ArgsContext, o:ChitchatVisitor) : ArgsNode = {
-    val constants = ListBuffer[ConstantNode]()
+    val values = ListBuffer[ValueNode]()
     val it = ctx.children.iterator()
 
     while (it.hasNext()) {
       val item = it.next()
-      if (item.isInstanceOf[ConstantContext]) {
-        constants += o.visit(item.asInstanceOf[ConstantContext]).asInstanceOf[ConstantNode]
+      if (item.isInstanceOf[ValueContext]) {
+        values += o.visit(item.asInstanceOf[ValueContext]).asInstanceOf[ValueNode]
       }
     }
-    ArgsNode(name = ctx.getText(), constants = constants.toList)
+    ArgsNode(name = ctx.getText(), values = values.toList)
   }
 }
