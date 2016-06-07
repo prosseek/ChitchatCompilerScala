@@ -38,7 +38,7 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
       case TypedefNode(name, id, annotation, base_name) => typedefs += input.asInstanceOf[TypedefNode]
       case CorrelationNode(name, id) =>                    correlations += input.asInstanceOf[CorrelationNode]
       case SituationNode(name, id, params, expression) =>                      situations += input.asInstanceOf[SituationNode]
-      case SchemaNode(name, id) =>                         schemas += input.asInstanceOf[SchemaNode]
+      case SchemaNode(name, id, annotation, expressions) =>                         schemas += input.asInstanceOf[SchemaNode]
       case ValuedefNode(name, id, map) =>                  valuedefs += input.asInstanceOf[ValuedefNode]
       case FunctionNode(name, return_type, id, params, block) =>        functions += input.asInstanceOf[FunctionNode]
       case CommandNode(name) =>                            commands += input.asInstanceOf[CommandNode]

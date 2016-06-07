@@ -1,14 +1,25 @@
 package visitor
 
-import node.{SchemaNode, SituationNode}
-import org.antlr.v4.runtime.ParserRuleContext
-import parser.ChitchatParser.{SchemaContext, SituationContext}
+import node._
+import parser.ChitchatParser.{ExpressionsContext, SchemaContext}
+import scala.collection.mutable.ListBuffer
 
-/**
-  * Created by smcho on 6/2/16.
-  */
 trait SchemaProcessor {
   def process(ctx: SchemaContext, o: ChitchatVisitor): SchemaNode = {
-    null
+
+    val it = ctx.children.iterator()
+    val es = ListBuffer[ExpressionsNode]()
+    while (it.hasNext()) {
+      val n = it.next()
+      if (n.isInstanceOf[ExpressionsContext]) {
+        val res = o.visit(n.asInstanceOf[ExpressionsContext]).asInstanceOf[ExpressionsNode]
+        es += res
+      }
+    }
+
+    SchemaNode(name = ctx.getText(),
+      annotation = ctx.annotation().getText(),
+      id = o.visit(ctx.id()).asInstanceOf[IdNode],
+      expressions = es.toList)
   }
 }

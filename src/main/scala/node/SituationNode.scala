@@ -209,7 +209,7 @@ case class SituationNode (override val name:String,
 
     getTemplateString(template, map.toMap)
   }
-  
+
   /**
     * === Why ===
     *
