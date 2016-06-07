@@ -13,15 +13,7 @@ case class ComparisonNode(
     val e2 = expression2.codeGen(progNode)
 
     val map = MMap[String, String]()
-    map("op") = op match {
-      case "==" => "cmp"
-      case ">=" => "geq"
-      case "<=" => "leq"
-      case ">" => "greater"
-      case "<" => "less"
-      case _ => throw new RuntimeException(s"Wrong operator ${op}")
-    }
-
+    map("op") = compareCodeGen
     map("e1") = e1
     map("e2") = e2
     val template =
@@ -31,6 +23,17 @@ case class ComparisonNode(
       """.stripMargin
     val res = getTemplateString(template, map.toMap)
     res
+  }
+
+  def compareCodeGen() :String = {
+    op match {
+      case "==" => "cmp"
+      case ">=" => "geq"
+      case "<=" => "leq"
+      case ">" => "greater"
+      case "<" => "less"
+      case _ => throw new RuntimeException(s"Wrong operator ${op}")
+    }
   }
 }
 

@@ -57,40 +57,6 @@ case class SituationNode (override val name:String,
                           val expression:ExpressionNode) extends Node(name = name, id = id) with Template {
 
   /**
-    * === Why ===
-    *
-    *  {{{ From the function parameter (partytime)
-    *   situation partyTime(partyname) = ([date, time] - now) >= 0 _hour
-    *
-    *  generate this assembly code
-    *
-    *      read partyname
-    *      jpeekfalse END
-    *  }}}
-    *
-    * @param endLabel
-    * @return
-    */
-  def getPrecode(endLabel:String) = {
-    val res = new StringBuilder()
-    val ps = params.ids map {
-      id => res ++= s"read ${id.name}\njpeekfalse ${endLabel}\n"
-    }
-    res.toString
-  }
-
-  def unitToValue(value:String, unit:String) = {
-    val u =  unit match {
-      case "_km" => 1000
-      case "_m" => 1
-      case "_hour" => 1
-      case _ => throw new RuntimeException(s"Wrong unit ${unit}")
-    }
-    val result = value.toInt * u
-    result.toString
-  }
-
-  /**
     * === why ===
     *  {{{ From the function body (comparison node)
     *   situation partyTime(partyname) = ([date, time] - now) >= 0 _hour
@@ -120,8 +86,8 @@ case class SituationNode (override val name:String,
     *    push [30, 25, 1, 74]
     *    push [-97, 47, 21, 83]
     *    abs location
-    *    push 5000.0
-    *    fleq
+    *    push 5000
+    *    leq
     *    r 0
     *
     *  }}}
@@ -152,7 +118,6 @@ case class SituationNode (override val name:String,
         """
           |#{code_from_list}
           |#{code_from_value}
-          |#{call_function}
           |#{push_value}
           |#{compare}
           |r 0
@@ -164,11 +129,15 @@ case class SituationNode (override val name:String,
         else e1.asArithmetic.expression1.asValue.asList
       else throw new RuntimeException(s"e1 in comparison node is neither absolute nor arithmetic")
 
+      val idNode:IdNode = if (e1.isAbsolute) e1.asAbsolute.expression2.asValue.asId
+      else e1.asArithmetic.expression2.asValue.asId
+
+      val e2 = c.expression2
+
       map("code_from_list") = getCodeFromList(listNode, endLabel)
-      map("code_from_value") = ""
-      map("call_function") = ""
-      map("push_value") = ""
-      map("compare") = ""
+      map("code_from_value") = getCodeFromId(idNode, progNode)
+      map("push_value") = e2.asValue.asConstantUnit.codeGen(progNode)
+      map("compare") = c.compareCodeGen
 
       getTemplateString(template, map.toMap)
     }
@@ -191,20 +160,33 @@ case class SituationNode (override val name:String,
     return s.toString
   }
 
-  def generateCodeFromParameters() = {
-    // progNode.isValue("")
-  }
-  def processArithmeticNode(arithmeticNode: ArithmeticNode) = {
-    val a = arithmeticNode.expression1
-//    val list = getListFromExpression(a)
-//    println(list)
-    val code = generateCodeFromParameters()
-    ""
-  }
-  def processAbsoluteNode(absoluteNode: AbsoluteNode) = {
-//    val a = absoluteNode.expression1
-//    val list = getListFromExpression(a)
-    ""
+  // todo: only ([list] - valuedef) format is allowed here, more general case should be supported
+  def getCodeFromId(id:IdNode, progNode:ProgNode) : String = {
+    // todo: process special case
+    // need also special case of "here"
+    // todo: make a function to process this case
+    if (id.name == "now") {
+      s"now\ndistance datetime\n"
+    }
+    else {
+      val vdef = progNode.getNode[ValuedefNode](id.name, progNode.valuedefs)
+
+      var location = false
+      if (vdef.isDefined) {
+        val s = new StringBuilder
+        vdef.get.map foreach {
+          case (key, value) => {
+            // todo: too simplistic location check
+            if (key == "longitude") location = true
+            s ++= s"push $value\n"
+          }
+        }
+        if (location) s ++= "abs location"
+        s.toString
+      }
+      else
+        throw new RuntimeException(s"only valuedef or predefined valuedef is supported here, you missed the value definition ${id.name}")
+    }
   }
 
   def codeGen(progNode:ProgNode) :String = {
@@ -226,5 +208,28 @@ case class SituationNode (override val name:String,
     map("function_body") = getFunctionBody(progNode, endLabel)
 
     getTemplateString(template, map.toMap)
+  }
+  
+  /**
+    * === Why ===
+    *
+    *  {{{ From the function parameter (partytime)
+    *   situation partyTime(partyname) = ([date, time] - now) >= 0 _hour
+    *
+    *  generate this assembly code
+    *
+    *      read partyname
+    *      jpeekfalse END
+    *  }}}
+    *
+    * @param endLabel
+    * @return
+    */
+  def getPrecode(endLabel:String) = {
+    val res = new StringBuilder()
+    val ps = params.ids map {
+      id => res ++= s"read ${id.name}\njpeekfalse ${endLabel}\n"
+    }
+    res.toString
   }
 }
