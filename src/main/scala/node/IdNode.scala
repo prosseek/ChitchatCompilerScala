@@ -20,7 +20,35 @@ case class IdNode(override val name:String) extends Node(name = name) with Templ
   }
 
   def schemaCodeGen(progNode:ProgNode, endLabel:String) :String = {
-    val code = s"read ${name}\njpeekfalse ${endLabel}\nregister ${name}\n"
-    code
+    /*
+             read time
+             jpeekfalse TIMEEND
+             register time
+             jmp TIMENEXT
+         TIMEEND:
+             pop $temp
+         TIMENEXT:
+     */
+    if (name.endsWith("?")) {
+      val name = this.name.replace("?", "")
+      val template ="""
+          |# optional start #{name}
+          |read #{name}
+          |jpeekfalse #{end}
+          |register #{name}
+          |jmp #{next}
+          |#{end}:
+          |pop $temp
+          |#{next}:
+        """.stripMargin
+      val map = MMap[String, String]()
+
+      map("name") = name
+      map("end") = name + "_END"
+      map("next") = name + "_NEXT"
+      getTemplateString(template, map.toMap)
+    }
+    else
+      s"read ${name}\njpeekfalse ${endLabel}\nregister ${name}\n"
   }
 }

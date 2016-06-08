@@ -28,6 +28,7 @@ class TestSchemaNode extends FunSuite {
   }
 
   test("classic") {
+    // +schema sensors = (name , event | advertisement , time?)
     val prognode = NodeGenerator.get("./resources/unittest_example/schema_classic.txt")
     val bs = prognode.getNode[SchemaNode]("sensors", prognode.schemas).get
 

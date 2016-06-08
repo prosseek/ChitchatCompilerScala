@@ -26,10 +26,12 @@ case class SchemaNode(override val name:String,
     val template =
       """function_call #{name}
         |stop
+        |
         |#{name}:
         |#{content}
         |#{end}:
         |return 0
+        |
         |#{rep_content}
       """.stripMargin
     val map = MMap[String, String]()

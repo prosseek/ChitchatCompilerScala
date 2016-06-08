@@ -24,30 +24,19 @@ ADVERTISEMENTEND:
 
   def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
 
-    def getContent() = {
-      val endLabel = labels("endLabel")
-      val res = new StringBuilder
-      ids foreach {
-        id => res ++= s"read ${id.name}\njpeekfalse ${id.name}_LABEL:\nregister${id.name}\njmp ${endLabel}"
-      }
+    val endLabel = labels("endLabel")
+    val endLabelInChoose = name + "_END"
+    val res = new StringBuilder
 
-      res.toString
+    // except the last
+    ids.reverse.tail.reverse foreach {
+      id => res ++= s"read ${id.name}\njpeekfalse ${id.name}_LABEL:\nregister${id.name}\njmp ${endLabelInChoose}\n\n"
     }
+    // last processing
+    val last = ids.last
+    res ++= ("pop $temp\n" + s"read ${last.name}\njpeekfalse ${endLabel}\nregister ${last.name}\n${endLabelInChoose}:\n")
 
-    def getLastContent() = {
-      ""
-    }
-
-    val map = MMap[String, String]()
-    map("labelend") = name + "_END"
-    map("content") = getContent()
-    map("lastContent") = getLastContent()
-    val template =
-      """#{content}
-        |#{lastContent}
-        |#{labelend}:
-      """.stripMargin
-
-    getTemplateString(template, map.toMap)
+    res.toString
+    
   }
 }

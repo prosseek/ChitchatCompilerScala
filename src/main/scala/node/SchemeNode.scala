@@ -15,7 +15,6 @@ case class SchemeNode(override val name:String,
     if (isId) node.asInstanceOf[IdNode]
     else throw new RuntimeException(s"Not id node")
   }
-
   def isRep() = {
     node.isInstanceOf[RepNode]
   }

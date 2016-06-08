@@ -14,8 +14,8 @@ trait ChooseProcessor {
 
     while(it.hasNext()) {
       val n = it.next()
-      if (n.isInstanceOf[IdNode]) {
-        res += n.asInstanceOf[IdNode]
+      if (n.isInstanceOf[IdContext]) {
+        res += o.visit(n.asInstanceOf[IdContext]).asInstanceOf[IdNode]
       }
     }
     ChooseNode(name = name, ids = res.toList)
