@@ -22,6 +22,9 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   with ValuedefProcessor
   with Constant_unitProcessor
   with AbsoluteProcessor
+  with SchemeProcessor
+  with RepProcessor
+  with ChooseProcessor
 {
   var prognode: ProgNode = _
 
@@ -81,4 +84,8 @@ class ChitchatVisitor extends ChitchatBaseVisitor[Node]
   override def visitConstant(ctx:ConstantContext) : ConstantNode = ConstantNode(name = ctx.getText())
   override def visitConstant_unit(ctx:Constant_unitContext) : Constant_unitNode = process(ctx, this)
   override def visitAbsolute(ctx:AbsoluteContext) : AbsoluteNode = process(ctx, this)
+
+  override def visitScheme(ctx:SchemeContext) : SchemeNode = process(ctx, this)
+  override def visitRep(ctx:RepContext) : RepNode = process(ctx, this)
+  override def visitChoose(ctx:ChooseContext) : ChooseNode = process(ctx, this)
 }

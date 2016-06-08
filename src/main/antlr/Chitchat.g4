@@ -13,7 +13,10 @@ correlation: CORRELATION id '=' '(' expressions ')' ;
 situation: SITUATION id params '=' expression ;
 
 // schema
-schema: annotation SCHEMA id '=' '(' expressions ')' ('|' '(' expressions ')' )* ;
+schema: annotation SCHEMA id '=' '(' (scheme ','?)+ ')' ;
+scheme: id | rep | choose;
+choose: (id '|'?)+ ;
+rep: '(' (id ','?)+ ')' '+';
 
 // value
 valuedef: VALUE id params '=' block ;

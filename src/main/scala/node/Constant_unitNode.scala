@@ -10,7 +10,7 @@ case class Constant_unitNode(override val name:String, val constant:ConstantNode
       case "_km" => 1000
       case "_m" => 1
       case "_hour" => 1
-      case _ => throw new RuntimeException(s"Wrong unit ${unit}")
+      case _ => 1 // todo: check if this is OK, when unit is "" just use 1
     }
     val result = value.toInt * u
     result.toString
