@@ -35,4 +35,14 @@ class TestSchemaNode extends FunSuite {
     val res = bs.codeGen(prognode)
     println(res)
   }
+
+  test("rep") {
+    // todo: the value is not allowed in the schema
+    // # + schema x = (name , event , (sensor, v)+ )
+    val prognode = NodeGenerator.get("./resources/unittest_example/schema_rep.txt")
+    val bs = prognode.getNode[SchemaNode]("x", prognode.schemas).get
+
+    val res = bs.codeGen(prognode)
+    println(res)
+  }
 }

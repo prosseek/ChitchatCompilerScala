@@ -41,7 +41,7 @@ case class SchemeNode(override val name:String,
       asChoose().codeGen(progNode, labels)
     }
     else if (isRep()) {
-      s"f ${asRep().name}\njpeekfalse ${endLabel}"
+      asRep().headerCodeGen(progNode, labels)
     }
     else throw new RuntimeException(s"node should be id/choose/rep")
   }

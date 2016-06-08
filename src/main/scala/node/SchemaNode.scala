@@ -42,7 +42,7 @@ case class SchemaNode(override val name:String,
     val labels = Map[String, String]("endLabel" -> end)
 
     map("content") = getContent(progNode, labels)
-    map("rep_content") = getRepContent(progNode)
+    map("rep_content") = getRepContent(progNode, labels)
 
     getTemplateString(template, map.toMap)
   }
@@ -57,13 +57,13 @@ case class SchemaNode(override val name:String,
     res.toString
   }
 
-  def getRepContent(progNode:ProgNode) = {
+  def getRepContent(progNode:ProgNode, labels:Map[String, String]) = {
     val res = new StringBuilder
     schemes foreach {
       scheme => {
         if (scheme.isRep()) {
           val node = scheme.asRep()
-          res ++= node.codeGen(progNode)
+          res ++= node.codeGen(progNode, labels)
         }
       }
     }

@@ -1,1 +1,1 @@
-+ schema x = (name , event , (sensor, value)+ )
++ schema x = (name , event , (sensor, v)+ )
