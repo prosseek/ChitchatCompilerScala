@@ -60,7 +60,11 @@ case class ProgNode(override val name:String = "") extends Node(name = name) {
     None
   }
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     ""
+  }
+  def parameterTranslate(name:String) = {
+    if (context == null) name
+    else context.parameterTranslate(name)
   }
 }

@@ -1,9 +1,12 @@
 package node
 
+import node.codegen.Template
+import scala.collection.mutable.{Map => MMap}
 /*
-  scheme: id | rep;
+  scheme: id | rep | option;
  */
-case class SchemeNode(override val name:String, val node:Node) extends Node(name = name) {
+case class SchemeNode(override val name:String,
+                      val node:Node) extends Node(name = name) with Template {
 
   def isId() = {
     node.isInstanceOf[IdNode]
@@ -29,5 +32,18 @@ case class SchemeNode(override val name:String, val node:Node) extends Node(name
     else throw new RuntimeException(s"Not choose node")
   }
 
-  def codeGen(progNode:ProgNode) :String = {""}
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
+    val endLabel = labels("endLabel")
+
+    if (isId()) {
+      asId().schemaCodeGen(progNode, endLabel)
+    }
+    else if (isChoose()) {
+      asChoose().codeGen(progNode, labels)
+    }
+    else if (isRep()) {
+      s"f ${asRep().name}\njpeekfalse ${endLabel}"
+    }
+    else throw new RuntimeException(s"node should be id/choose/rep")
+  }
 }

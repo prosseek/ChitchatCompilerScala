@@ -55,7 +55,7 @@ case class FunctionNode(override val name:String,
       name
   }
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     val template =
       """#{function_name}:
         |#{block_code}

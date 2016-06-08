@@ -16,7 +16,7 @@ case class Constant_unitNode(override val name:String, val constant:ConstantNode
     result.toString
   }
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     val value = constant.name
     s"push ${unitToValue(value, unit)}"
   }

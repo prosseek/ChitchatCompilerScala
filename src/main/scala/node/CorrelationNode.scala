@@ -91,7 +91,7 @@ case class CorrelationNode(override val name:String, override val id:IdNode) ext
     getTemplateString(template, map.toMap)
   }
 
-  def codeGen(progNode:ProgNode) : String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) : String = {
     val correlationNodes = progNode.correlations.toList
 
     def generate_for_simple(values: List[String]) = {

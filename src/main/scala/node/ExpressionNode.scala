@@ -53,7 +53,7 @@ case class ExpressionNode(override val name:String, val node:Node) extends Node(
     else throw new RuntimeException(s"expression node is not logic node")
   }
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     node match {
       case Function_callNode(name, id, constants) => node.codeGen(progNode)
       case AssignmentNode(name, id, expression) => node.codeGen(progNode)

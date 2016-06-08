@@ -26,7 +26,7 @@ case class AssignmentNode(override val name:String,
     * @param progNode
     * @return
     */
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     val idCode = id.codeGen(progNode)
     ""
   }

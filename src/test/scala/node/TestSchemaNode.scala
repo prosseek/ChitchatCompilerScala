@@ -26,4 +26,12 @@ class TestSchemaNode extends FunSuite {
     val res = bs.codeGen(prognode)
     println(res)
   }
+
+  test("classic") {
+    val prognode = NodeGenerator.get("./resources/unittest_example/schema_classic.txt")
+    val bs = prognode.getNode[SchemaNode]("sensors", prognode.schemas).get
+
+    val res = bs.codeGen(prognode)
+    println(res)
+  }
 }

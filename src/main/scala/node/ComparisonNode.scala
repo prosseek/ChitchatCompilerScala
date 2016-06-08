@@ -8,7 +8,7 @@ case class ComparisonNode(
                           val expression1:ExpressionNode,
                           val op:String,
                           val expression2:ExpressionNode) extends Node(name = name) with Template {
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     val e1 = expression1.codeGen(progNode)
     val e2 = expression2.codeGen(progNode)
 

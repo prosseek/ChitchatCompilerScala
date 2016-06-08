@@ -14,7 +14,7 @@ case class ValuedefNode(override val name:String,
                         val map:Map[String, String]) extends Node(name = name, id = id) {
   var predefined = false
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     ""
   }
 }

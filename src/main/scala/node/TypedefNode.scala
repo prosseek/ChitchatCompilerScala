@@ -29,7 +29,7 @@ case class TypedefNode(override val name:String, override val id:IdNode, val ann
     comparison = comparisonNode
   }
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     val cg = new TypedefCodeGen(typedefNode = this, progNode = progNode)
     cg.generate()
   }

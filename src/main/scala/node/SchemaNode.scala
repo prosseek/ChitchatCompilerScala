@@ -1,5 +1,9 @@
 package node
 
+import node.codegen.Template
+
+import scala.collection.mutable.{Map => MMap}
+
 /**
   * schema: annotation SCHEMA id '=' '(' (scheme ','?)+ ')' ;
   * scheme: id | rep;
@@ -10,42 +14,57 @@ package node
   * @param annotation
   * @param schemes
   */
-case class SchemaNode(override val name:String, override val id:IdNode, val annotation:String, val schemes:List[SchemeNode]) extends Node(name = name, id = id) {
+case class SchemaNode(override val name:String,
+                      override val id:IdNode,
+                      val annotation:String,
+                      val schemes:List[SchemeNode]) extends Node(name = name, id = id) with Template {
 
-  def codeGen(progNode:ProgNode) :String = {
-    val s = new StringBuilder
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
+    val name = id.name
+    val end = s"${name}_END"
 
-    schemes foreach {
-      schema => s ++= _codeGen(schema, progNode)
-    }
+    val template =
+      """function_call #{name}
+        |stop
+        |#{name}:
+        |#{content}
+        |#{end}:
+        |return 0
+        |#{rep_content}
+      """.stripMargin
+    val map = MMap[String, String]()
 
-    s.toString
+    map("name") = name
+    map("end") = end
+
+    val labels = Map[String, String]("endLabel" -> end)
+
+    map("content") = getContent(progNode, labels)
+    map("rep_content") = getRepContent(progNode)
+
+    getTemplateString(template, map.toMap)
   }
 
-  /**
-    * === Simple example ===
-    * {{{
-    *   # +schema sender = (a b c)
-    *     read a
-    *     jpeekfalse END
-    *     register a
-    *     read b
-    *     jpeekfalse END
-    *     register b
-    *     read c
-    *     jpeekfalse END
-    *     register c
-    *     push_summary
-    *    END:
-    *     stop
-    * }}}
-    *
-    * @param progNode
-    * @return
-    */
-  def _codeGen(es:SchemeNode, progNode:ProgNode) = {
-    val endNode = id.name + "END"
+  def getContent(progNode:ProgNode, labels:Map[String, String]) = {
+    val res = new StringBuilder
+    schemes foreach {
+      scheme => {
+        res ++= scheme.codeGen(progNode, labels)
+      }
+    }
+    res.toString
+  }
 
-    ""
+  def getRepContent(progNode:ProgNode) = {
+    val res = new StringBuilder
+    schemes foreach {
+      scheme => {
+        if (scheme.isRep()) {
+          val node = scheme.asRep()
+          res ++= node.codeGen(progNode)
+        }
+      }
+    }
+    res.toString
   }
 }

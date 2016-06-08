@@ -30,10 +30,10 @@ case class ValueNode (override val name:String, val node:Node) extends Node(name
     else throw new RuntimeException(s"expression node is not constant unit node")
   }
 
-  def codeGen(progNode:ProgNode) :String = {
+  def codeGen(progNode:ProgNode, labels:Map[String, String] = null) :String = {
     node match {
-      case IdNode(name) => node.codeGen(progNode)
-      case Constant_unitNode(name, constant, unit) => node.codeGen(progNode)
+      case IdNode(name) => node.codeGen(progNode, null)
+      case Constant_unitNode(name, constant, unit) => node.codeGen(progNode, null)
       case _ => "WHY?"
     }
   }
